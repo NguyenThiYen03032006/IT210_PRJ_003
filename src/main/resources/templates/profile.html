@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+        <div class="card-body">
+
+            <h3 class="mb-4">Thông tin cá nhân</h3>
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>Username</th>
+                    <td th:text="${user.username}"></td>
+                </tr>
+
+                <tr>
+                    <th>Role</th>
+                    <td>
+                        <span class="badge badge-info" th:text="${user.role}"></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Họ tên</th>
+                    <td th:text="${user.profile.fullName}"></td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td th:text="${user.email}"></td>
+                </tr>
+
+                <tr>
+                    <th>Số điện thoại</th>
+                    <td th:text="${user.profile.phone}"></td>
+                </tr>
+            </table>
+            <a th:href="${homeUrl}" class="btn btn-primary">Trang chủ</a>
+            <a href="/edit-profile" class="btn btn-warning">
+                Chỉnh sửa
+            </a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

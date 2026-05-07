@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-card">
+
+    <h2 class="text-center mb-4">Đăng nhập</h2>
+
+    <form th:action="@{/auth/login}" th:object="${login}" method="post">
+
+        <!-- EMAIL -->
+        <!-- EMAIL -->
+        <div class="form-group">
+            <label>Email</label>
+            <input type="text"
+                   th:field="*{username}"
+                   class="form-control"
+                   th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'">
+
+            <!-- Lỗi sẽ hiện khi input có class 'is-invalid' -->
+            <div class="invalid-feedback"
+                 th:if="${#fields.hasErrors('username')}"
+                 th:errors="*{username}">
+            </div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+            <label>Mật khẩu</label>
+            <input type="password"
+                   th:field="*{password}"
+                   class="form-control"
+                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'">
+
+            <div class="invalid-feedback"
+                 th:if="${#fields.hasErrors('password')}"
+                 th:errors="*{password}">
+            </div>
+        </div>
+        <!-- lỗi sai login -->
+        <div class="text-danger mb-2" th:if="${loginError}">
+            <span th:text="${loginError}"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+            Đăng nhập
+        </button>
+
+    </form>
+
+    <div class="text-center mt-3">
+        <a th:href="@{/auth/register-page}">Chưa có tài khoản? Đăng ký</a>
+    </div>
+
+</div>
+
+</body>
+</html>

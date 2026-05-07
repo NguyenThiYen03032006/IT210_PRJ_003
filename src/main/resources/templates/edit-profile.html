@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-body">
+
+            <h3 class="mb-4">Chỉnh sửa thông tin</h3>
+
+            <form action="/update-profile" method="post">
+
+                <div class="form-group">
+                    <label>User name</label>
+                    <input type="text" name="userName" class="form-control"
+                           th:value="${user.profile.getUser().getUsername()}">
+                </div>
+
+                <div class="form-group">
+                    <label>Họ tên</label>
+                    <input type="text" name="fullName" class="form-control"
+                           th:value="${user.profile.fullName}">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-control"
+                           th:value="${user.email}">
+                </div>
+
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" name="phone" class="form-control"
+                           th:value="${user.profile.phone}">
+                </div>
+                <div th:if="${error}" class="alert alert-danger">
+                    <span th:text="${error}"></span>
+                </div>
+                <button class="btn btn-primary">Lưu</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
