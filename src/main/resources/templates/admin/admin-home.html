@@ -1,21 +1,91 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Admin Home</title>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { background-color: #f4f7f6; }
+        /* Cấu hình sidebar cố định bên trái */
+        .sidebar {
+            min-height: 100vh;
+            background: #ffffff;
+            border-right: 1px solid #ddd;
+        }
+        .nav-link { color: #333; font-weight: 500; padding: 15px 20px; }
+        .nav-link:hover, .nav-link.active {
+            background: #007bff;
+            color: #fff !important;
+            border-radius: 5px;
+        }
+        .main-content { padding: 30px; }
+        .card-custom {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+    </style>
 </head>
-
 <body>
 
 <div th:replace="~{header :: header}"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{admin/admin-sidebar :: admin-sidebar}"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 main-content">
+            <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+                <h2>Tổng quan hệ thống</h2>
+                <span class="text-muted" th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}"></span>
+            </div>
 
-<div class="container mt-4">
-    <h3>Trang Admin</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card card-custom bg-white p-4 mb-4">
+                        <h6>TỔNG SỐ PHIM</h6>
+                        <h2 class="text-primary">124</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-custom bg-white p-4 mb-4">
+                        <h6>THỂ LOẠI</h6>
+                        <h2 class="text-success">18</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-custom bg-white p-4 mb-4">
+                        <h6>NGƯỜI DÙNG</h6>
+                        <h2 class="text-warning">1,052</h2>
+                    </div>
+                </div>
+            </div>
 
-    <div class="border p-5 text-center">
-        Nội dung admin (để trống)
+            <div class="card card-custom bg-white p-4">
+                <h5>Danh sách phim mới cập nhật</h5>
+                <table class="table mt-3">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên phim</th>
+                        <th>Ngày đăng</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>#101</td>
+                        <td>Spider-Man: No Way Home</td>
+                        <td>05/05/2026</td>
+                        <td><button class="btn btn-sm btn-outline-info">Sửa</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

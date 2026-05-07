@@ -3,6 +3,7 @@ package com.it210_prj.controller;
 import com.it210_prj.model.dto.LoginRequest;
 import com.it210_prj.model.entity.User;
 import com.it210_prj.repository.UserRepository;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
@@ -20,10 +21,8 @@ public class PageController {
         this.userRepo = userRepo;
     }
 
-    // ===== LOGIN PAGE =====
     @GetMapping("/auth/login")
     public String loginPage(Model model) {
-        // Đảm bảo key là "login" trùng với th:object trong HTML
         model.addAttribute("login", new LoginRequest());
         return "login";
     }
@@ -40,16 +39,42 @@ public class PageController {
         }
 
         try {
-            request.login(req.getUsername(), req.getPassword());
-            return "redirect:/profile-page";
+            // KIỂM TRA: Nếu đã đăng nhập rồi thì không login nữa
+            if (request.getUserPrincipal() != null) {
+                // Có thể thực hiện logout user cũ nếu muốn đăng nhập user mới:
+                // request.logout();
+            } else {
+                // Chỉ gọi login nếu chưa có Principal (chưa đăng nhập)
+                request.login(req.getUsername(), req.getPassword());
+            }
 
+            User user = userRepo.findByEmail(req.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            String role = user.getRole().name();
+
+            if ("ADMIN".equals(role)) {
+                return "redirect:/admin/home";
+            } else if ("STAFF".equals(role)) {
+                return "redirect:/staff/home";
+            } else {
+                return "redirect:/customer/home";
+            }
+
+        } catch (ServletException e) {
+            // Lỗi này xảy ra khi request.login thất bại hoặc "already authenticated"
+            if (e.getMessage().contains("already authenticated")) {
+                // Nếu đã đăng nhập rồi, redirect thẳng tới trang chủ tương ứng
+                return "redirect:/profile-page";
+            }
+            model.addAttribute("loginError", "Tài khoản hoặc mật khẩu không chính xác");
+            return "login";
         } catch (Exception e) {
-            // Lỗi sai tài khoản/mật khẩu
-            model.addAttribute("loginError", "Tài khoản đang nhập không hợp lệ");
+            e.printStackTrace();
+            model.addAttribute("loginError", "Đã có lỗi hệ thống xảy ra");
             return "login";
         }
     }
-    // ===== USER CURRENT =====
     private User getCurrentUser(Authentication auth) {
         if (auth == null || !auth.isAuthenticated()
                 || auth.getName().equals("anonymousUser")) {
@@ -60,7 +85,6 @@ public class PageController {
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
     }
 
-    // ===== PROFILE =====
     @GetMapping("/profile-page")
     public String profile(Authentication auth, Model model) {
 
@@ -78,7 +102,6 @@ public class PageController {
         return "profile";
     }
 
-    // ===== EDIT PROFILE =====
     @GetMapping("/edit-profile")
     public String editProfile(Authentication auth, Model model) {
 
@@ -88,7 +111,6 @@ public class PageController {
         return "edit-profile";
     }
 
-    // ===== UPDATE PROFILE =====
     @PostMapping("/update-profile")
     public String updateProfile(Authentication auth,
                                 @RequestParam String userName,

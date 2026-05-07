@@ -20,11 +20,17 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Các tài nguyên tĩnh (css, js, images) nên được permitAll nếu có
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+
                         .requestMatchers("/auth/**").permitAll()
+
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/staff/**").hasAuthority("STAFF")
+                        .requestMatchers("/customer/**").hasAuthority("CUSTOMER")
                         .requestMatchers("/profile-page", "/edit-profile", "/update-profile").authenticated()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/staff/**").hasRole("STAFF")
-                        .requestMatchers("/customer/**").hasRole("CUSTOMER")
+
+                        // 5. Mọi request khác đều phải login
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -35,6 +41,9 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/auth/login?logout")
+                        .invalidateHttpSession(true) // Xóa session khi logout
+                        .deleteCookies("JSESSIONID") // Xóa cookie khi logout
+                        .permitAll()
                 );
 
         return http.build();
