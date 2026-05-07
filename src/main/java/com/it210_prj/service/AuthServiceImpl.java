@@ -7,7 +7,7 @@ import com.it210_prj.model.entity.UserProfile;
 import com.it210_prj.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -21,9 +21,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void register(RegisterRequest req) {
-
         if (userRepo.findByEmail(req.getEmail()).isPresent()) {
-            throw new RuntimeException("Email đã tồn tại");
+            throw new RuntimeException("Email da ton tai");
+        }
+
+        if (!req.getPassword().equals(req.getConfirmPassword())) {
+            throw new RuntimeException("Mat khau nhap lai khong khop");
         }
 
         User user = new User();
@@ -34,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
         UserProfile profile = new UserProfile();
         profile.setFullName(req.getFullName());
+        profile.setPhone(req.getPhone());
         profile.setUser(user);
 
         user.setProfile(profile);

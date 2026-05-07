@@ -1,18 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
-    <title>Admin Home</title>
+    <meta charset="UTF-8">
+    <title>CineGold - Đặt vé xem phim</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/cinema.css}">
 </head>
-<body>
-<div th:replace="~{header :: header}"></div>
+<body class="cinema-body">
+<div th:replace="~{layout/site-header :: site-header}"></div>
 
-<div class="container mt-4">
-    <h3>Trang Khách hàng</h3>
-
-    <div class="border p-5 text-center">
-        Nội dung customer
+<section class="hero-banner">
+    <div class="container">
+        <span class="age-badge">HOT</span>
+        <h1 class="hero-title mt-3">Không gian đặt vé điện ảnh hiện đại</h1>
+        <p class="hero-copy mt-3">Chọn phim, giữ ghế và thanh toán nhanh cho những suất chiếu mới nhất trong ngày.</p>
+        <a class="btn cinema-btn cinema-btn-gold mt-3" href="#now-showing">Đặt vé ngay</a>
     </div>
-</div>
+</section>
+
+<main class="container cinema-section" id="now-showing">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <p class="subtle-label">Now Showing</p>
+            <h2 class="mb-0">Phim đang chiếu</h2>
+        </div>
+        <a class="btn cinema-btn cinema-btn-outline" th:href="@{/customer/bookings}">Lịch sử vé</a>
+    </div>
+
+    <div class="mb-4">
+        <span class="genre-chip" th:each="genre : ${genres}" th:text="${genre.name}">Action</span>
+    </div>
+
+    <div class="row">
+        <div class="col-6 col-md-4 col-lg-3 mb-4" th:each="movie : ${movies}">
+            <article class="movie-card">
+                <img class="movie-poster"
+                     th:src="${movie.poster != null && !movie.poster.isEmpty()} ? ${movie.poster} : 'https://via.placeholder.com/360x540/1a1d26/f2c14e?text=CineGold'"
+                     th:alt="${movie.title}">
+                <div class="movie-hover">
+                    <a class="btn cinema-btn cinema-btn-gold" th:href="@{'/customer/movies/' + ${movie.id}}">Xem trailer</a>
+                </div>
+                <div class="p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="age-badge">T13</span>
+                        <small class="text-muted" th:text="${movie.duration} + ' phút'">120 phút</small>
+                    </div>
+                    <h5 class="mb-1 text-truncate" th:text="${movie.title}">Tên phim</h5>
+                    <small class="text-muted" th:text="${movie.genre != null ? movie.genre.name : 'Đang cập nhật'}">Thể loại</small>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <div class="cinema-panel p-5 text-center" th:if="${#lists.isEmpty(movies)}">
+        <h4>Chưa có phim đang chiếu</h4>
+        <p class="text-muted mb-0">Admin hãy thêm phim và suất chiếu để khách đặt vé.</p>
+    </div>
+</main>
+
+<div th:replace="~{layout/site-footer :: site-footer}"></div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

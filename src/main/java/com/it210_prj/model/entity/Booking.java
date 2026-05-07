@@ -6,27 +6,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.time.LocalDateTime;
+
 
 @Entity
-@Table(name = "rooms")
+@Table(name = "bookings")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Room {
+public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private LocalDateTime bookingTime;
 
-    private Integer totalSeats;
+    private Double totalPrice;
 
-    @OneToMany(mappedBy = "room")
-    private List<Showtime> showtimes;
+    private String status;
+    // PENDING, PAID, CANCELLED
 
-    @OneToMany(mappedBy = "room")
-    private List<Seat> seats;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

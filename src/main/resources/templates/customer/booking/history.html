@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử đặt vé</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/cinema.css}">
+</head>
+<body class="cinema-body">
+<div th:replace="~{layout/site-header :: site-header}"></div>
+
+<main class="container cinema-section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Vé đã đặt</h1>
+        <a class="btn cinema-btn cinema-btn-outline" th:href="@{/customer/home}">Tiếp tục đặt vé</a>
+    </div>
+
+    <div class="history-ticket p-4 mb-3" th:each="booking : ${bookings}">
+        <div class="row align-items-center">
+            <div class="col-md-auto mb-3 mb-md-0">
+                <div class="qr-box">QR</div>
+            </div>
+            <div class="col-md">
+                <small class="text-muted">Mã vé #<span th:text="${booking.bookingId}">1</span></small>
+                <h4 class="mb-1" th:text="${booking.movieTitle}">Tên phim</h4>
+                <p class="text-muted mb-1">
+                    <span th:text="${#temporals.format(booking.startTime, 'dd/MM/yyyy HH:mm')}">07/05/2026 19:00</span>
+                    <span class="mx-2">•</span>
+                    <span th:text="${booking.roomName}">Phòng</span>
+                </p>
+                <p class="mb-0">Ghế: <strong th:text="${#strings.listJoin(booking.seatNames, ', ')}">A1</strong></p>
+            </div>
+            <div class="col-md-auto text-md-right mt-3 mt-md-0">
+                <div class="text-warning font-weight-bold"
+                     th:text="${#numbers.formatDecimal(booking.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">75,000đ</div>
+                <span class="badge badge-success" th:if="${booking.status == 'PAID'}">Thành công</span>
+                <span class="badge badge-secondary" th:if="${booking.status == 'CANCELLED'}">Đã hủy</span>
+                <form th:if="${booking.status != 'CANCELLED'}"
+                      th:action="@{'/customer/bookings/' + ${booking.bookingId} + '/cancel-form'}"
+                      method="post"
+                      class="mt-2"
+                      onsubmit="return confirm('Bạn có chắc chắn muốn hủy vé? Lưu ý: Chỉ được hoàn tiền/hủy trước suất chiếu 24h');">
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Hủy vé</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="cinema-panel p-5 text-center" th:if="${#lists.isEmpty(bookings)}">
+        <h4>Chưa có vé nào</h4>
+        <p class="text-muted mb-0">Khi đặt vé thành công, lịch sử sẽ hiển thị tại đây.</p>
+    </div>
+</main>
+
+<div th:replace="~{layout/site-footer :: site-footer}"></div>
+</body>
+</html>

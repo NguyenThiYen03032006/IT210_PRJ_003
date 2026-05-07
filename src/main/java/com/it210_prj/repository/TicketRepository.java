@@ -1,0 +1,51 @@
+package com.it210_prj.repository;
+
+import com.it210_prj.model.entity.Ticket;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Collection;
+import java.util.List;
+
+public interface TicketRepository extends JpaRepository<Ticket, Long> {
+
+    boolean existsByShowtimeIdAndSeatId(Long showtimeId, Long seatId);
+
+    long countByShowtimeId(Long showtimeId);
+
+    List<Ticket> findByBookingId(Long bookingId);
+
+    void deleteByBookingId(Long bookingId);
+
+    @Query("""
+        SELECT t.seat.id
+        FROM Ticket t
+        WHERE t.showtime.id = :showtimeId
+        AND t.seat.id IN :seatIds
+    """)
+    List<Long> findBookedSeatIds(
+            @Param("showtimeId") Long showtimeId,
+            @Param("seatIds") Collection<Long> seatIds
+    );
+
+    @Query("""
+        SELECT t.seat.id
+        FROM Ticket t
+        WHERE t.showtime.id = :showtimeId
+    """)
+    List<Long> findBookedSeatIdsByShowtimeId(@Param("showtimeId") Long showtimeId);
+
+    @Query("""
+        SELECT t
+        FROM Ticket t
+        JOIN FETCH t.booking b
+        JOIN FETCH t.showtime st
+        JOIN FETCH st.movie
+        JOIN FETCH st.room
+        JOIN FETCH t.seat
+        WHERE b.user.email = :email
+        ORDER BY b.bookingTime DESC, t.seat.seatName ASC
+    """)
+    List<Ticket> findHistoryTicketsByUserEmail(@Param("email") String email);
+}

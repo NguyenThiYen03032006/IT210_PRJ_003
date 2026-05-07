@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="site-header" class="navbar navbar-expand-lg navbar-dark cinema-nav sticky-top">
+    <div class="container">
+        <a class="navbar-brand cinema-brand" th:href="@{/customer/home}">CineGold</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#cinemaNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="cinemaNav" class="collapse navbar-collapse">
+            <form class="form-inline mx-lg-4 my-3 my-lg-0 flex-grow-1">
+                <input class="form-control cinema-search w-100" type="search" placeholder="Tìm phim, thể loại, suất chiếu">
+            </form>
+            <ul class="navbar-nav mr-3">
+                <li class="nav-item"><a class="nav-link" th:href="@{/customer/home}">Phim đang chiếu</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/customer/bookings}">Vé của tôi</a></li>
+            </ul>
+            <a class="btn cinema-btn cinema-btn-outline mr-2" th:href="@{/profile-page}">Profile</a>
+            <a class="btn cinema-btn cinema-btn-gold" th:href="@{/logout}">Đăng xuất</a>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

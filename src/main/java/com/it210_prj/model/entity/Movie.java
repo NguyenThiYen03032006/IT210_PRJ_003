@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "movies")
+
 public class Movie {
 
     @Id
@@ -38,4 +40,7 @@ public class Movie {
     @ManyToOne
     @JoinColumn(name = "genre_id")
     private Genre genre;
+
+    @OneToMany(mappedBy = "movie")
+    private List<Showtime> showtimes;
 }

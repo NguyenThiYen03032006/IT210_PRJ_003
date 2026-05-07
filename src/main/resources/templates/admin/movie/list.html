@@ -1,82 +1,53 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
-    <title>Movie List</title>
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .movie-card {
-            transition: transform 0.2s;
-            height: 100%;
-        }
-        .movie-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .card-img-top {
-            height: 350px;
-            object-fit: cover; /* Giúp ảnh không bị méo */
-            background-color: #f8f9fa;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <title>Quản lý phim</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/cinema.css}">
 </head>
-
-<body>
+<body class="admin-shell">
 <div th:replace="~{header :: header}"></div>
-
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3>🎬 Danh sách phim</h3>
-        <div>
-            <a href="/admin/home" class="btn btn-outline-secondary">Quay lại</a>
-            <a href="/admin/movies/create" class="btn btn-primary">+ Thêm phim mới</a>
-        </div>
-    </div>
-
-    <!-- Bắt đầu Grid Card -->
+<div class="container-fluid">
     <div class="row">
-        <!-- Duyệt danh sách phim -->
-        <div class="col-6 col-md-4 col-lg-3 mb-4" th:each="m : ${movies}">
-            <div class="card movie-card">
-                <!-- Ảnh mặc định (Placeholder) -->
-                <img th:src="${m.poster != null && !m.poster.isEmpty()} ? ${m.poster} : 'https://via.placeholder.com/300x450?text=No+Poster'"
-                     class="card-img-top" alt="Movie Poster">
+        <div th:replace="~{admin/admin-sidebar :: admin-sidebar}"></div>
+        <main class="col-md-9 col-lg-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <p class="subtle-label">Movies</p>
+                    <h1 class="page-title">Quản lý phim</h1>
+                </div>
+                <a th:href="@{/admin/movies/create}" class="btn cinema-btn cinema-btn-gold">Thêm phim</a>
+            </div>
 
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title text-truncate" th:text="${m.title}" th:title="${m.title}">Tên phim</h5>
-
-                    <p class="card-text mb-1">
-                        <span class="badge badge-info" th:text="${m.genre.name}">Thể loại</span>
-                        <span class="badge badge-secondary" th:text="${m.category.name}">Danh mục</span>
-                    </p>
-
-                    <p class="card-text small text-muted">
-                        <i class="far fa-clock"></i> <span th:text="${m.duration} + ' phút'"></span> <br>
-                        <i class="far fa-calendar-alt"></i> <span th:text="${m.releaseDate}"></span>
-                    </p>
-
-                    <div class="mt-auto d-flex justify-content-between">
-                        <a th:href="@{'/admin/movies/edit/' + ${m.id}}"
-                           class="btn btn-warning btn-sm flex-fill mr-1">Sửa</a>
-
-                        <a th:href="@{'/admin/movies/delete/' + ${m.id}}"
-                           class="btn btn-danger btn-sm flex-fill ml-1"
-                           onclick="return confirm('Xoá phim này?')">Xoá</a>
-                    </div>
+            <div class="row">
+                <div class="col-6 col-md-4 col-lg-3 mb-4" th:each="m : ${movies}">
+                    <article class="movie-card">
+                        <img th:src="${m.poster != null && !m.poster.isEmpty()} ? ${m.poster} : 'https://via.placeholder.com/360x540/12304a/f4c542?text=CineGold'"
+                             class="movie-poster" alt="Movie Poster">
+                        <div class="p-3">
+                            <h5 class="mb-1 text-truncate" th:text="${m.title}" th:title="${m.title}">Tên phim</h5>
+                            <p class="mb-2">
+                                <span class="badge badge-warning" th:text="${m.genre != null ? m.genre.name : 'N/A'}">Genre</span>
+                                <span class="badge badge-secondary" th:text="${m.category != null ? m.category.name : 'N/A'}">Category</span>
+                            </p>
+                            <small class="text-muted d-block mb-3" th:text="${m.duration} + ' phút'">120 phút</small>
+                            <div class="d-flex">
+                                <a th:href="@{'/admin/movies/edit/' + ${m.id}}" class="btn btn-sm cinema-btn cinema-btn-outline flex-fill mr-2">Sửa</a>
+                                <a th:href="@{'/admin/movies/delete/' + ${m.id}}"
+                                   class="btn btn-sm btn-outline-danger flex-fill"
+                                   onclick="return confirm('Xóa phim này?')">Xóa</a>
+                            </div>
+                        </div>
+                    </article>
                 </div>
             </div>
-        </div>
-    </div>
-    <!-- Kết thúc Grid Card -->
 
-    <!-- Hiển thị thông báo nếu danh sách trống -->
-    <div th:if="${#lists.isEmpty(movies)}" class="text-center py-5">
-        <p class="text-muted">Chưa có bộ phim nào trong danh sách.</p>
+            <div th:if="${#lists.isEmpty(movies)}" class="cinema-panel p-5 text-center">
+                <p class="text-muted mb-0">Chưa có phim nào.</p>
+            </div>
+        </main>
     </div>
-
 </div>
-
-<!-- Thêm FontAwesome để dùng icon cho đẹp -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>

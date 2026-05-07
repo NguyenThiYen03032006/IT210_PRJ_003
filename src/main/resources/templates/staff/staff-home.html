@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
-    <title>Admin Home</title>
+    <meta charset="UTF-8">
+    <title>Staff Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/cinema.css}">
 </head>
-<body>
-<div th:replace="~{header :: header}"></div>
+<body class="cinema-body">
+<div th:replace="~{layout/site-header :: site-header}"></div>
 
-<div class="container mt-4">
-    <h3>Trang Nhân viên</h3>
-
-    <div class="border p-5 text-center">
-        Nội dung staff
+<main class="container cinema-section">
+    <div class="cinema-panel p-5">
+        <p class="subtle-label">Staff</p>
+        <h1 class="page-title mb-3">Trang nhân viên</h1>
+        <p class="text-muted mb-0">Khu vực thao tác nghiệp vụ tại rạp. Giao diện đã đồng bộ với theme CineGold.</p>
     </div>
-</div>
+</main>
 </body>
 </html>

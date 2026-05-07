@@ -3,6 +3,7 @@ package com.it210_prj.controller;
 import com.it210_prj.model.dto.LoginRequest;
 import com.it210_prj.model.entity.User;
 import com.it210_prj.repository.UserRepository;
+import com.it210_prj.service.BookingService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class PageController {
 
     private final UserRepository userRepo;
+    private final BookingService bookingService;
 
-    public PageController(UserRepository userRepo) {
+    public PageController(UserRepository userRepo, BookingService bookingService) {
         this.userRepo = userRepo;
+        this.bookingService = bookingService;
     }
 
     @GetMapping("/auth/login")
@@ -98,6 +101,7 @@ public class PageController {
 
         model.addAttribute("user", user);
         model.addAttribute("homeUrl", homeUrl);
+        model.addAttribute("bookings", bookingService.getHistory(user.getEmail()));
 
         return "profile";
     }

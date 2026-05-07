@@ -11,15 +11,21 @@ import lombok.Setter;
 @Setter
 @Getter
 public class RegisterRequest {
-    @NotBlank(message = "Email không được để trống")
+
+    @NotBlank(message = "Email khong duoc de trong")
     private String email;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
+    @NotBlank(message = "Mat khau khong duoc de trong")
     private String password;
 
-    @NotBlank(message = "Username không được để trống")
+    @NotBlank(message = "Vui long nhap lai mat khau")
+    private String confirmPassword;
+
+    @NotBlank(message = "Username khong duoc de trong")
     private String username;
 
-    @NotBlank(message = "Không được để trống")
-    public String fullName;
+    @NotBlank(message = "Ho ten khong duoc de trong")
+    private String fullName;
+
+    private String phone;
 }

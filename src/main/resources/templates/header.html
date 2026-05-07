@@ -1,26 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-
 <div th:fragment="header">
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Cinema</a>
-
-        <div class="ml-auto">
-
-            <a href="/profile-page" class="btn btn-info mr-2">
-                Profile
-            </a>
-
-            <a href="/logout" class="btn btn-danger">
-                Logout
-            </a>
-
+    <nav class="navbar navbar-expand-lg navbar-dark cinema-nav">
+        <div class="container">
+            <a class="navbar-brand cinema-brand" th:href="@{/customer/home}">CineGold</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#globalHeader">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="globalHeader" class="collapse navbar-collapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/customer/home}">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/customer/bookings}">Vé của tôi</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/home}">Admin</a></li>
+                </ul>
+                <a th:href="@{/profile-page}" class="btn cinema-btn cinema-btn-outline mr-2">Profile</a>
+                <a th:href="@{/logout}" class="btn cinema-btn cinema-btn-gold">Đăng xuất</a>
+            </div>
         </div>
     </nav>
-
 </div>
-
 </body>
 </html>

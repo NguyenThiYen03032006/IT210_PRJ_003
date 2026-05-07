@@ -1,67 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-
-<nav th:fragment="admin-sidebar" class="col-md-3 col-lg-2 d-md-block sidebar shadow-sm">
-    <div class="sidebar-sticky d-flex flex-column" style="height: 100vh;">
-        <!-- Phần Menu phía trên -->
-        <div class="flex-grow-1">
-            <h5 class="px-4 mt-3 mb-3">ADMIN PANEL</h5>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" th:href="@{/admin/home}">
-                        <i class="fas fa-home"></i> Tổng quan
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/admin/categories}">
-                        <i class="fas fa-list"></i> Category
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/admin/movies}">
-                        <i class="fas fa-video"></i> Movie
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/admin/genre}">
-                        <i class="fas fa-film"></i> Genre
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Phần Thông tin người dùng ở dưới cùng -->
-        <div class="user-profile border-top p-3 bg-light">
-            <div class="d-flex align-items-center mb-2">
-                <!-- Avatar mặc định dùng icon FontAwesome -->
-                <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center mr-2"
-                     style="width: 40px; height: 40px; border-radius: 50%;">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="user-info overflow-hidden">
-                    <p class="mb-0 font-weight-bold text-truncate"
-                       style="font-size: 0.9rem;"
-                    >ADMIN</p>
-                    <small class="text-muted">Quản trị viên</small>
-                </div>
-            </div>
-
+<nav th:fragment="admin-sidebar" class="col-md-3 col-lg-2 admin-sidebar-dark p-3">
+    <h4 class="cinema-brand mb-4">CineGold Admin</h4>
+    <a class="nav-link" th:href="@{/admin/home}">Dashboard</a>
+    <a class="nav-link" th:href="@{/admin/movies}">Phim</a>
+    <a class="nav-link" th:href="@{/admin/showtimes}">Suất chiếu</a>
+    <a class="nav-link" th:href="@{/admin/categories}">Danh mục</a>
+    <a class="nav-link" th:href="@{/admin/genre}">Thể loại</a>
+    <div class="mt-auto pt-4 text-muted small">
+        <div class="border-top pt-3" style="border-color: var(--cinema-line) !important;">
+            Quản trị hệ thống rạp phim
         </div>
     </div>
-
-    <!-- CSS bổ sung để Sidebar có thể co giãn -->
-    <style>
-        .sidebar-sticky {
-            position: sticky;
-            top: 0;
-            height: 100vh;
-        }
-        .user-info p {
-            max-width: 130px; /* Tránh tràn chữ nếu email quá dài */
-        }
-    </style>
 </nav>
-
 </body>
 </html>
