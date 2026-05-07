@@ -24,7 +24,7 @@ public class HomeController {
 
     @GetMapping("/staff/home")
     public String staffHome() {
-        return "staff/staff-home";
+        return "redirect:/staff/bookings";
     }
 
     @GetMapping("/customer/home")

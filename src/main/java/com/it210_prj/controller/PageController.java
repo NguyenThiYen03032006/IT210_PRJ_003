@@ -101,7 +101,9 @@ public class PageController {
 
         model.addAttribute("user", user);
         model.addAttribute("homeUrl", homeUrl);
-        model.addAttribute("bookings", bookingService.getHistory(user.getEmail()));
+        if ("CUSTOMER".equals(role)) {
+            model.addAttribute("bookings", bookingService.getHistory(user.getEmail()));
+        }
 
         return "profile";
     }

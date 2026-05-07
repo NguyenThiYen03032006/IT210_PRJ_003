@@ -12,4 +12,8 @@ public interface BookingService {
     void cancelBooking(String userEmail, Long bookingId);
 
     List<BookingHistoryDTO> getHistory(String userEmail);
+
+    List<BookingHistoryDTO> getAllHistory();
+
+    void confirmBooking(Long bookingId);
 }

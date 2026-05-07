@@ -109,6 +109,28 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public List<BookingHistoryDTO> getHistory(String userEmail) {
         List<Ticket> tickets = ticketRepository.findHistoryTicketsByUserEmail(userEmail);
+        return buildHistory(tickets);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingHistoryDTO> getAllHistory() {
+        return buildHistory(ticketRepository.findAllHistoryTickets());
+    }
+
+    @Override
+    @Transactional
+    public void confirmBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (!"CANCELLED".equals(booking.getStatus())) {
+            booking.setStatus("CONFIRMED");
+            bookingRepository.save(booking);
+        }
+    }
+
+    private List<BookingHistoryDTO> buildHistory(List<Ticket> tickets) {
         Map<Long, List<Ticket>> ticketsByBooking = new LinkedHashMap<>();
 
         for (Ticket ticket : tickets) {

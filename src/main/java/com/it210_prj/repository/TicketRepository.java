@@ -48,4 +48,17 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
         ORDER BY b.bookingTime DESC, t.seat.seatName ASC
     """)
     List<Ticket> findHistoryTicketsByUserEmail(@Param("email") String email);
+
+    @Query("""
+        SELECT t
+        FROM Ticket t
+        JOIN FETCH t.booking b
+        JOIN FETCH b.user
+        JOIN FETCH t.showtime st
+        JOIN FETCH st.movie
+        JOIN FETCH st.room
+        JOIN FETCH t.seat
+        ORDER BY b.bookingTime DESC, t.seat.seatName ASC
+    """)
+    List<Ticket> findAllHistoryTickets();
 }
