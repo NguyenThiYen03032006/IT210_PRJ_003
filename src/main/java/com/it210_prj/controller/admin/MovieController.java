@@ -1,5 +1,7 @@
 package com.it210_prj.controller.admin;
 
+import com.it210_prj.model.entity.Category;
+import com.it210_prj.model.entity.Genre;
 import com.it210_prj.model.entity.Movie;
 import com.it210_prj.service.admin.CategoryService;
 import com.it210_prj.service.admin.GenreService;
@@ -8,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 
 @Controller
 @RequestMapping("/admin/movies")
@@ -19,7 +20,7 @@ public class MovieController {
     private final CategoryService categoryService;
     private final GenreService genreService;
 
-    @GetMapping
+    @GetMapping // Bỏ @RequestMapping("/admin/movies") thừa ở đây
     public String list(Model model) {
         model.addAttribute("movies", movieService.findAll());
         return "admin/movie/list";
@@ -27,7 +28,12 @@ public class MovieController {
 
     @GetMapping("/create")
     public String createForm(Model model) {
-        model.addAttribute("movie", new Movie());
+        Movie movie = new Movie();
+        // Khởi tạo sẵn object để tránh lỗi null khi binding field.id
+        movie.setCategory(new Category());
+        movie.setGenre(new Genre());
+
+        model.addAttribute("movie", movie);
         model.addAttribute("categories", categoryService.findAll());
         model.addAttribute("genres", genreService.findAll());
         return "admin/movie/form";
@@ -35,10 +41,20 @@ public class MovieController {
 
     @PostMapping("/save")
     public String save(@ModelAttribute Movie movie) {
+        // Nếu id của category/genre là null, hãy set cả object đó về null
+        // để tránh lỗi Hibernate khi save object rỗng
+        if (movie.getCategory() != null && movie.getCategory().getId() == null) {
+            movie.setCategory(null);
+        }
+        if (movie.getGenre() != null && movie.getGenre().getId() == null) {
+            movie.setGenre(null);
+        }
+
         movieService.save(movie);
         return "redirect:/admin/movies";
     }
 
+    // ... các hàm khác giữ nguyên
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
         movieService.deleteById(id);

@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/admin/genres")
+@RequestMapping("/admin/genre")
 @RequiredArgsConstructor
 public class GenreController {
 
@@ -29,12 +29,12 @@ public class GenreController {
     @PostMapping("/save")
     public String save(@ModelAttribute Genre genre) {
         genreService.save(genre);
-        return "redirect:/admin/genres";
+        return "redirect:/admin/genre";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
         genreService.deleteById(id);
-        return "redirect:/admin/genres";
+        return "redirect:/admin/genre";
     }
 }

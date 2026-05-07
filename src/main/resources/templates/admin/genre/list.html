@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Genre List</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+<div th:replace="~{header :: header}"></div>
+<div class="container mt-4">
+    <a href="/admin/home" class="btn btn-primary">Quay lại</a>
+    <h3>Danh sách thể loại</h3>
+    <a href="/admin/home" class="btn btn-primary">Quay lại</a>
+    <a class="btn btn-primary mb-3"
+       href="/admin/genre/create">+ Thêm thể loại</a>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên thể loại</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="g : ${genres}">
+            <td th:text="${g.id}"></td>
+            <td th:text="${g.name}"></td>
+            <td>
+                <a th:href="@{'/admin/genre/edit/' + ${g.id}}"
+                   class="btn btn-warning btn-sm">Sửa</a>
+
+                <a th:href="@{'/admin/genre/delete/' + ${g.id}}"
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Xoá?')">Xoá</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

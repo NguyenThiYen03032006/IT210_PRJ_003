@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Movie Form</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <h3 th:text="${movie.id == null} ? 'Thêm phim' : 'Sửa phim'"></h3>
+
+    <form th:action="@{/admin/movies/save}"
+          th:object="${movie}"
+          method="post">
+
+        <input type="hidden" th:field="*{id}"/>
+
+        <!-- Title -->
+        <div class="form-group">
+            <label>Tên phim</label>
+            <input type="text" class="form-control" th:field="*{title}">
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label>Mô tả</label>
+            <textarea class="form-control" th:field="*{description}"></textarea>
+        </div>
+
+        <!-- Duration -->
+        <div class="form-group">
+            <label>Thời lượng (phút)</label>
+            <input type="number" class="form-control" th:field="*{duration}">
+        </div>
+
+        <!-- Release Date -->
+        <div class="form-group">
+            <label>Ngày phát hành</label>
+            <input type="date" class="form-control" th:field="*{releaseDate}">
+        </div>
+
+        <!-- Chọn Category -->
+        <div class="form-group">
+            <label>Danh mục</label>
+            <select class="form-control" th:field="*{category.id}">
+                <option value="">-- Chọn danh mục --</option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.id}"
+                        th:text="${cat.name}"></option>
+            </select>
+        </div>
+
+        <!-- Chọn Genre -->
+        <div class="form-group">
+            <label>Thể loại</label>
+            <select class="form-control" th:field="*{genre.id}">
+                <option value="">-- Chọn thể loại --</option>
+                <option th:each="g : ${genres}"
+                        th:value="${g.id}"
+                        th:text="${g.name}"></option>
+            </select>
+        </div>
+
+        <button class="btn btn-success">Lưu</button>
+        <a href="/admin/movies" class="btn btn-secondary">Quay lại</a>
+
+    </form>
+
+</div>
+
+</body>
+</html>
