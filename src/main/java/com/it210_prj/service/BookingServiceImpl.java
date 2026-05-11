@@ -1,8 +1,10 @@
 package com.it210_prj.service;
 
 import com.it210_prj.model.dto.BookingHistoryDTO;
+import com.it210_prj.model.dto.BookingInvoiceDetailDTO;
 import com.it210_prj.model.dto.BookingResponse;
 import com.it210_prj.model.entity.Booking;
+import com.it210_prj.model.entity.Movie;
 import com.it210_prj.model.entity.Seat;
 import com.it210_prj.model.entity.Showtime;
 import com.it210_prj.model.entity.Ticket;
@@ -13,6 +15,10 @@ import com.it210_prj.repository.ShowtimeRepository;
 import com.it210_prj.repository.TicketRepository;
 import com.it210_prj.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +33,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
-    private static final double TICKET_PRICE = 75000D;
-    private static final int CANCEL_BEFORE_HOURS = 24;
+    private static final int CANCEL_BEFORE_HOURS = 12;
 
     private final BookingRepository bookingRepository;
     private final ShowtimeRepository showtimeRepository;
     private final SeatRepository seatRepository;
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+
 
     @Override
     @Transactional
@@ -64,10 +70,15 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
+        double total = 0;
+        for (Seat seat : seats) {
+            total += unitPriceForSeat(seat);
+        }
+
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setBookingTime(LocalDateTime.now());
-        booking.setTotalPrice(uniqueSeatIds.size() * TICKET_PRICE);
+        booking.setTotalPrice(total);
         booking.setStatus("PAID");
         bookingRepository.save(booking);
 
@@ -84,7 +95,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public void cancelBooking(String userEmail, Long bookingId) {
+    public void requestCancelBooking(String userEmail, Long bookingId) {
         Booking booking = bookingRepository.findByIdAndUserEmail(bookingId, userEmail)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn của bạn"));
 
@@ -92,16 +103,15 @@ public class BookingServiceImpl implements BookingService {
             return;
         }
 
-        List<Ticket> tickets = ticketRepository.findByBookingId(bookingId);
-        for (Ticket ticket : tickets) {
-            LocalDateTime deadline = LocalDateTime.now().plusHours(CANCEL_BEFORE_HOURS);
-            if (!deadline.isBefore(ticket.getShowtime().getStartTime())) {
-                throw new RuntimeException("Chỉ được hủy vé trước giờ chiếu ít nhất 24 giờ");
-            }
+        if ("CONFIRMED".equals(booking.getStatus())) {
+            throw new RuntimeException("Ve da in tai quay, khong the huy truc tuyen.");
         }
 
-        booking.setStatus("CANCELLED");
-        ticketRepository.deleteByBookingId(bookingId);
+        if (!"PAID".equals(booking.getStatus())) {
+            throw new RuntimeException("Trang thai don hien tai khong ho tro gui yeu cau huy.");
+        }
+
+        booking.setStatus("CANCEL_REQUESTED");
         bookingRepository.save(booking);
     }
 
@@ -114,8 +124,81 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingHistoryDTO> getAllHistory() {
-        return buildHistory(ticketRepository.findAllHistoryTickets());
+    public BookingInvoiceDetailDTO getBookingInvoiceDetail(String userEmail, Long bookingId) {
+        List<Ticket> tickets = ticketRepository.findInvoiceDetailForBooking(bookingId, userEmail);
+        if (tickets.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy hóa đơn hoặc bạn không có quyền xem.");
+        }
+        Ticket first = tickets.get(0);
+        Booking booking = first.getBooking();
+        Showtime showtime = first.getShowtime();
+        Movie movie = showtime.getMovie();
+        User user = booking.getUser();
+
+        List<String> seatNames = tickets.stream()
+                .map(t -> t.getSeat().getSeatName())
+                .toList();
+
+        String fullName = user.getProfile() != null ? user.getProfile().getFullName() : null;
+        String phone = user.getProfile() != null ? user.getProfile().getPhone() : null;
+        String format = showtime.getScreenFormat() != null ? showtime.getScreenFormat() : "2D";
+
+        return new BookingInvoiceDetailDTO(
+                booking.getId(),
+                booking.getBookingTime(),
+                booking.getStatus(),
+                booking.getTotalPrice(),
+                movie.getTitle(),
+                movie.getPoster(),
+                movie.getDuration(),
+                movie.getAgeRating(),
+                showtime.getStartTime(),
+                showtime.getEndTime(),
+                showtime.getRoom().getName(),
+                format,
+                seatNames,
+                user.getEmail(),
+                fullName,
+                phone
+        );
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BookingHistoryDTO> getStaffHistory(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Booking> bookingPage;
+
+        String q = keyword == null ? "" : keyword.trim();
+        if (q.isEmpty()) {
+            bookingPage = bookingRepository.findAllByOrderByBookingTimeDesc(pageable);
+        } else if (q.matches("\\d+")) {
+            Long bookingId = Long.parseLong(q);
+            bookingPage = bookingRepository.findById(bookingId)
+                    .map(b -> new PageImpl<>(List.of(b), pageable, 1))
+                    .orElseGet(() -> new PageImpl<>(List.of(), pageable, 0));
+        } else {
+            bookingPage = bookingRepository.findByUserEmailContainingIgnoreCaseOrderByBookingTimeDesc(q, pageable);
+        }
+
+        List<Long> bookingIds = bookingPage.getContent().stream()
+                .map(Booking::getId)
+                .toList();
+        Map<Long, List<Ticket>> ticketsByBookingId = new LinkedHashMap<>();
+        if (!bookingIds.isEmpty()) {
+            for (Ticket ticket : ticketRepository.findByBookingIdsWithDetails(bookingIds)) {
+                ticketsByBookingId
+                        .computeIfAbsent(ticket.getBooking().getId(), ignored -> new ArrayList<>())
+                        .add(ticket);
+            }
+        }
+
+        List<BookingHistoryDTO> rows = bookingPage.getContent().stream()
+                .map(booking -> toHistoryRowForStaff(booking, ticketsByBookingId.get(booking.getId())))
+                .toList();
+
+        return new PageImpl<>(rows, pageable, bookingPage.getTotalElements());
     }
 
     @Override
@@ -124,10 +207,42 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        if (!"CANCELLED".equals(booking.getStatus())) {
-            booking.setStatus("CONFIRMED");
-            bookingRepository.save(booking);
+        if ("CANCELLED".equals(booking.getStatus())) {
+            throw new RuntimeException("Don da huy, khong the in ve.");
         }
+        if ("CONFIRMED".equals(booking.getStatus())) {
+            return;
+        }
+        booking.setStatus("CONFIRMED");
+        bookingRepository.save(booking);
+    }
+
+
+    @Override
+    @Transactional
+    public void cancelBookingByStaff(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đặt vé"));
+
+        if ("CANCELLED".equals(booking.getStatus())) {
+            return;
+        }
+
+        if ("CONFIRMED".equals(booking.getStatus())) {
+            throw new RuntimeException("Ve da in tai quay, khong the huy.");
+        }
+
+        List<Ticket> tickets = ticketRepository.findByBookingId(bookingId);
+        for (Ticket ticket : tickets) {
+            LocalDateTime deadline = LocalDateTime.now().plusHours(CANCEL_BEFORE_HOURS);
+            if (!deadline.isBefore(ticket.getShowtime().getStartTime())) {
+                throw new RuntimeException("Khong the huy/hoan tien vi con duoi 12 gio truoc suat chieu.");
+            }
+        }
+
+        booking.setStatus("CANCELLED");
+        ticketRepository.deleteByBookingId(bookingId);
+        bookingRepository.save(booking);
     }
 
     private List<BookingHistoryDTO> buildHistory(List<Ticket> tickets) {
@@ -162,5 +277,50 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return history;
+    }
+
+
+    private BookingHistoryDTO toHistoryRowForStaff(Booking booking, List<Ticket> bookingTickets) {
+        if (bookingTickets == null || bookingTickets.isEmpty()) {
+            return new BookingHistoryDTO(
+                    booking.getId(),
+                    "(Da huy - ve da duoc giai phong)",
+                    null,
+                    null,
+                    "N/A",
+                    List.of(),
+                    booking.getTotalPrice(),
+                    booking.getStatus(),
+                    booking.getBookingTime()
+            );
+        }
+        Ticket first = bookingTickets.get(0);
+        Showtime showtime = first.getShowtime();
+        List<String> seatNames = bookingTickets.stream()
+                .map(ticket -> ticket.getSeat().getSeatName())
+                .toList();
+        return new BookingHistoryDTO(
+                booking.getId(),
+                showtime.getMovie().getTitle(),
+                showtime.getMovie().getPoster(),
+                showtime.getStartTime(),
+                showtime.getRoom().getName(),
+                seatNames,
+                booking.getTotalPrice(),
+                booking.getStatus(),
+                booking.getBookingTime()
+        );
+    }
+
+    private double unitPriceForSeat(Seat seat) {
+        String t = seat.getSeatType();
+        if (t == null) {
+            return 75_000;
+        }
+        return switch (t.toUpperCase()) {
+            case "VIP" -> 95_000;
+            case "COUPLE" -> 140_000;
+            default -> 75_000;
+        };
     }
 }

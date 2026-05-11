@@ -33,6 +33,17 @@ public class Movie {
 
     private String poster;
 
+    /** T13, T16, P, ... */
+    private String ageRating;
+
+    private String director;
+
+    @Column(length = 1024)
+    private String trailerUrl;
+
+    /** Hiển thị ở carousel trang chủ */
+    private boolean hot;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

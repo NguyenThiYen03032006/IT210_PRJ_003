@@ -4,19 +4,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const totalPrice = document.querySelector("[data-total-price]");
     const bookingForm = document.querySelector("[data-booking-form]");
     const messageBox = document.querySelector("[data-booking-message]");
-    const pricePerSeat = Number(document.body.dataset.ticketPrice || 75000);
+    const prices = {
+        STANDARD: Number(document.body.dataset.priceStandard || 75000),
+        VIP: Number(document.body.dataset.priceVip || 95000),
+        COUPLE: Number(document.body.dataset.priceCouple || 140000),
+    };
 
     function money(value) {
         return new Intl.NumberFormat("vi-VN").format(value) + "đ";
     }
 
+    function priceForSeatElement(seat) {
+        const t = (seat.dataset.seatType || "STANDARD").toUpperCase();
+        return prices[t] != null ? prices[t] : prices.STANDARD;
+    }
+
     function renderSummary() {
-        const labels = Array.from(selectedSeats).map(function (seatId) {
+        const labels = [];
+        let sum = 0;
+        selectedSeats.forEach(function (seatId) {
             const seat = document.querySelector("[data-seat-id='" + seatId + "']");
-            return seat ? seat.dataset.seatName : seatId;
+            if (seat) {
+                labels.push(seat.dataset.seatName);
+                sum += priceForSeatElement(seat);
+            }
         });
         selectedList.textContent = labels.length ? labels.join(", ") : "Chưa chọn";
-        totalPrice.textContent = money(labels.length * pricePerSeat);
+        totalPrice.textContent = money(sum);
     }
 
     document.querySelectorAll("[data-seat-id]").forEach(function (seat) {
@@ -47,10 +61,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     showtimeId: Number(bookingForm.dataset.showtimeId),
-                    seatIds: Array.from(selectedSeats).map(Number)
-                })
+                    seatIds: Array.from(selectedSeats).map(Number),
+                }),
             })
                 .then(function (response) {
+                    if (response.status === 401 || response.status === 403) {
+                        window.location.href = "/auth/login";
+                        return Promise.reject(new Error("Cần đăng nhập để đặt vé."));
+                    }
                     if (!response.ok) {
                         return response.text().then(function (text) {
                             throw new Error(text || "Không thể đặt vé.");

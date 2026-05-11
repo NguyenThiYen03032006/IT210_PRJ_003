@@ -26,10 +26,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Configuration
 public class DataInitializer {
+
+    private static final LocalDateTime SHOW_PAST_R1_MORNING =
+            LocalDateTime.of(2026, 5, 1, 9, 0);
+    private static final LocalDateTime SHOW_PAST_R1_EVENING =
+            LocalDateTime.of(2026, 5, 2, 18, 30);
+    private static final LocalDateTime SHOW_PAST_R2_AFTERNOON =
+            LocalDateTime.of(2026, 5, 3, 14, 0);
+    private static final LocalDateTime SHOW_PAST_R2_LATE =
+            LocalDateTime.of(2026, 5, 4, 20, 15);
+
+    private static final LocalDateTime SHOW_FUTURE_R1_2D =
+            LocalDateTime.of(2026, 6, 10, 9, 0);
+    private static final LocalDateTime SHOW_FUTURE_R1_3D =
+            LocalDateTime.of(2026, 6, 10, 13, 0);
+    private static final LocalDateTime SHOW_FUTURE_R2_DRAMA =
+            LocalDateTime.of(2026, 6, 10, 11, 0);
+    private static final LocalDateTime SHOW_FUTURE_R2_ANIM =
+            LocalDateTime.of(2026, 6, 10, 16, 0);
 
     @Bean
     CommandLineRunner initData(
@@ -182,7 +199,11 @@ public class DataInitializer {
                 120,
                 "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=700&q=80",
                 nowShowing,
-                action
+                action,
+                "T16",
+                "Jordan Lee",
+                "https://www.youtube.com/watch?v=TnGl01FkMMo",
+                true
         );
 
         Movie silentOrbit = createMovie(
@@ -192,7 +213,11 @@ public class DataInitializer {
                 105,
                 "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=700&q=80",
                 nowShowing,
-                drama
+                drama,
+                "T13",
+                "Mai Anh",
+                "https://www.youtube.com/watch?v=TnGl01FkMMo",
+                true
         );
 
         Movie littleComet = createMovie(
@@ -202,7 +227,11 @@ public class DataInitializer {
                 95,
                 "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=700&q=80",
                 comingSoon,
-                animation
+                animation,
+                "P",
+                "Studio North",
+                "https://www.youtube.com/watch?v=TnGl01FkMMo",
+                false
         );
 
         return new SeedCatalog(goldenNight, silentOrbit, littleComet);
@@ -215,7 +244,11 @@ public class DataInitializer {
             int duration,
             String poster,
             Category category,
-            Genre genre
+            Genre genre,
+            String ageRating,
+            String director,
+            String trailerUrl,
+            boolean hot
     ) {
         Movie movie = new Movie();
         movie.setTitle(title);
@@ -225,6 +258,10 @@ public class DataInitializer {
         movie.setPoster(poster);
         movie.setCategory(category);
         movie.setGenre(genre);
+        movie.setAgeRating(ageRating);
+        movie.setDirector(director);
+        movie.setTrailerUrl(trailerUrl);
+        movie.setHot(hot);
         return movieRepository.save(movie);
     }
 
@@ -246,10 +283,12 @@ public class DataInitializer {
         roomRepository.save(room);
 
         for (char row = 'A'; row <= 'E'; row++) {
-            for (int number = 1; number <= 10; number++) {
+            String seatType = row <= 'B' ? "STANDARD" : row <= 'D' ? "VIP" : "COUPLE";
+            for (int number = 0; number <= 9; number++) {
                 Seat seat = new Seat();
                 seat.setRoom(room);
                 seat.setSeatName(row + String.valueOf(number));
+                seat.setSeatType(seatType);
                 seatRepository.save(seat);
             }
         }
@@ -262,25 +301,90 @@ public class DataInitializer {
             SeedCatalog catalog,
             SeedRooms rooms
     ) {
-        LocalDateTime tomorrow = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(9, 0));
-        createShowtime(showtimeRepository, catalog.goldenNight(), rooms.room1(), tomorrow);
-        createShowtime(showtimeRepository, catalog.goldenNight(), rooms.room1(), tomorrow.plusHours(4));
-        createShowtime(showtimeRepository, catalog.silentOrbit(), rooms.room2(), tomorrow.plusHours(2));
-        createShowtime(showtimeRepository, catalog.littleComet(), rooms.room2(), tomorrow.plusHours(6));
+        // Đã chiếu (start < “hiện tại” khi demo quanh 5–6/2026) — dùng test ẩn suất / lịch sử
+        createShowtime(
+                showtimeRepository,
+                catalog.goldenNight(),
+                rooms.room1(),
+                SHOW_PAST_R1_MORNING,
+                "2D",
+                "EXPIRED"
+        );
+        createShowtime(
+                showtimeRepository,
+                catalog.goldenNight(),
+                rooms.room1(),
+                SHOW_PAST_R1_EVENING,
+                "3D",
+                "EXPIRED"
+        );
+        createShowtime(
+                showtimeRepository,
+                catalog.silentOrbit(),
+                rooms.room2(),
+                SHOW_PAST_R2_AFTERNOON,
+                "2D",
+                "EXPIRED"
+        );
+        createShowtime(
+                showtimeRepository,
+                catalog.littleComet(),
+                rooms.room2(),
+                SHOW_PAST_R2_LATE,
+                "2D",
+                "EXPIRED"
+        );
+
+        // Sắp chiếu — dùng test đặt vé / full phòng
+        createShowtime(
+                showtimeRepository,
+                catalog.goldenNight(),
+                rooms.room1(),
+                SHOW_FUTURE_R1_2D,
+                "2D",
+                "ACTIVE"
+        );
+        createShowtime(
+                showtimeRepository,
+                catalog.goldenNight(),
+                rooms.room1(),
+                SHOW_FUTURE_R1_3D,
+                "3D",
+                "ACTIVE"
+        );
+        createShowtime(
+                showtimeRepository,
+                catalog.silentOrbit(),
+                rooms.room2(),
+                SHOW_FUTURE_R2_DRAMA,
+                "2D",
+                "ACTIVE"
+        );
+        createShowtime(
+                showtimeRepository,
+                catalog.littleComet(),
+                rooms.room2(),
+                SHOW_FUTURE_R2_ANIM,
+                "2D",
+                "ACTIVE"
+        );
     }
 
     private void createShowtime(
             ShowtimeRepository showtimeRepository,
             Movie movie,
             Room room,
-            LocalDateTime startTime
+            LocalDateTime startTime,
+            String screenFormat,
+            String status
     ) {
         Showtime showtime = new Showtime();
         showtime.setMovie(movie);
         showtime.setRoom(room);
         showtime.setStartTime(startTime);
         showtime.setEndTime(startTime.plusMinutes(movie.getDuration()));
-        showtime.setStatus("ACTIVE");
+        showtime.setStatus(status != null && !status.isBlank() ? status : "ACTIVE");
+        showtime.setScreenFormat(screenFormat != null ? screenFormat : "2D");
         showtimeRepository.save(showtime);
     }
 

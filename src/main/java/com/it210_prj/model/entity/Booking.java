@@ -26,8 +26,8 @@ public class Booking {
     private Double totalPrice;
 
     private String status;
-    // PENDING, PAID, CANCELLED
 
+    // PENDING, PAID, CANCELLED
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

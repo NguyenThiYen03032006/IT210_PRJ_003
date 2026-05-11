@@ -35,4 +35,7 @@ public class Showtime {
     private LocalDateTime endTime;
 
     private String status; // ACTIVE, EXPIRED, SOLD_OUT
+
+    /** 2D, 3D */
+    private String screenFormat;
 }

@@ -5,6 +5,10 @@ import com.it210_prj.repository.UserRepository;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
+/**
+ * Nạp user theo email cho Spring Security form login.
+ * {@code authorities} dùng tên enum role (ADMIN/STAFF/CUSTOMER) để khớp {@code hasAuthority} trong SecurityConfig.
+ */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -14,6 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepo = userRepo;
     }
 
+    /** username thực tế là email trong hệ thống. */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepo.findByEmail(email)
@@ -22,7 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
-                // SỬA TẠI ĐÂY: Dùng authorities thay vì roles
                 .authorities(user.getRole().name())
                 .build();
     }

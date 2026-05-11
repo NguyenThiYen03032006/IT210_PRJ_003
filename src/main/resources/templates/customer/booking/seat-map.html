@@ -6,7 +6,10 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/cinema.css}">
 </head>
-<body class="cinema-body" data-ticket-price="75000">
+<body class="cinema-body"
+      data-price-standard="75000"
+      data-price-vip="95000"
+      data-price-couple="140000">
 <div th:replace="~{layout/site-header :: site-header}"></div>
 
 <main class="container cinema-section">
@@ -14,11 +17,11 @@
         <div class="col-lg-8 mb-4">
             <div class="screen-arc">MÀN HÌNH</div>
             <div class="seat-grid mx-auto">
-                <button th:each="seat, stat : ${seats}"
+                <button th:each="seat : ${seats}"
                         type="button"
                         class="seat"
-                        th:classappend="${#lists.contains(bookedSeatIds, seat.id)} ? ' sold' : (${stat.index >= 40} ? ' sweetbox' : (${stat.index >= 20} ? ' vip' : ''))"
-                        th:attr="data-seat-id=${seat.id},data-seat-name=${seat.seatName}"
+                        th:classappend="${#lists.contains(bookedSeatIds, seat.id)} ? ' sold' : (${seat.seatType == 'COUPLE'} ? ' sweetbox' : (${seat.seatType == 'VIP'} ? ' vip' : ''))"
+                        th:attr="data-seat-id=${seat.id},data-seat-name=${seat.seatName},data-seat-type=${seat.seatType != null ? seat.seatType : 'STANDARD'}"
                         th:text="${#lists.contains(bookedSeatIds, seat.id)} ? 'X' : ${seat.seatName}">
                     A1
                 </button>

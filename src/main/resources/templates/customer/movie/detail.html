@@ -17,7 +17,7 @@
                  th:alt="${movie.title}">
         </div>
         <div class="col-md-8">
-            <span class="age-badge">T13</span>
+            <span class="age-badge" th:text="${movie.ageRating != null ? movie.ageRating : 'T13'}">T13</span>
             <h1 class="mt-3" th:text="${movie.title}">Tên phim</h1>
             <p class="text-muted">
                 <span th:text="${movie.releaseDate}">2026</span>
@@ -25,6 +25,9 @@
                 <span th:text="${movie.duration} + ' phút'">120 phút</span>
                 <span class="mx-2">•</span>
                 <span th:text="${movie.genre != null ? movie.genre.name : 'Đang cập nhật'}">Thể loại</span>
+            </p>
+            <p th:if="${movie.trailerUrl != null && !movie.trailerUrl.isEmpty()}">
+                <a class="btn cinema-btn cinema-btn-outline btn-sm" th:href="${movie.trailerUrl}" target="_blank" rel="noopener noreferrer">Xem trailer</a>
             </p>
             <div class="cinema-panel p-4 mb-4">
                 <h5>Mô tả</h5>
@@ -42,7 +45,7 @@
                 <div class="col-sm-6 mb-3">
                     <div class="cinema-panel p-3">
                         <small class="text-muted">Đạo diễn</small>
-                        <div>Đang cập nhật</div>
+                        <div th:text="${movie.director != null && !movie.director.isEmpty()} ? ${movie.director} : 'Đang cập nhật'">Đang cập nhật</div>
                     </div>
                 </div>
             </div>
@@ -55,21 +58,46 @@
             <a class="btn cinema-btn cinema-btn-outline" th:href="@{/customer/home}">Quay lại</a>
         </div>
 
-        <div class="cinema-panel p-4">
-            <div class="mb-4">
-                <span class="genre-chip" th:each="showtime : ${showtimes}"
-                      th:text="${#temporals.format(showtime.startTime, 'EEE dd/MM')}">Thứ 2 07/05</span>
+        <div class="alert alert-info" th:if="${infoMessage}" th:text="${infoMessage}"></div>
+
+        <div class="cinema-panel p-4" th:if="${!#maps.isEmpty(showtimesByDate)}">
+            <p class="text-muted mb-2">Chọn ngày</p>
+            <div class="day-chips mb-4">
+                <button type="button" class="genre-chip day-chip mr-2 mb-2"
+                        th:each="entry, s : ${showtimesByDate}"
+                        th:classappend="${s.first} ? ' genre-chip-active'"
+                        th:text="${#temporals.format(entry.key, 'EEE dd/MM/yyyy')}"
+                        th:attr="data-day-index=${s.index}">Thứ 2</button>
             </div>
 
-            <a th:each="showtime : ${showtimes}"
-               class="showtime-btn"
-               th:classappend="${showtime.startTime.isBefore(T(java.time.LocalDateTime).now())} ? ' disabled'"
-               th:href="@{'/customer/showtimes/' + ${showtime.id} + '/seats'}">
-                <span th:text="${#temporals.format(showtime.startTime, 'HH:mm')}">09:00</span>
-                <span class="ml-2 text-muted" th:text="${showtime.room.name}">Phòng 1</span>
-            </a>
+            <div th:each="entry, s : ${showtimesByDate}"
+                 class="day-panel"
+                 th:classappend="${s.first} ? '' : ' d-none'"
+                 th:attr="data-day-panel=${s.index}">
+                <p class="text-muted small mb-2">Giờ chiếu</p>
+                <th:block th:each="row : ${entry.value}">
+                    <a th:if="${!row.soldOut}"
+                       class="showtime-btn"
+                       th:href="@{'/customer/showtimes/' + ${row.showtimeId} + '/seats'}">
+                        <span th:text="${#temporals.format(row.startTime, 'HH:mm')}">09:00</span>
+                        <span class="ml-2 text-muted" th:text="${row.roomName}">Phòng 1</span>
+                        <span class="ml-2 badge badge-secondary" th:text="${row.screenFormat}">2D</span>
+                    </a>
+                    <span th:if="${row.soldOut}"
+                          class="showtime-btn disabled text-muted"
+                          style="cursor:not-allowed;pointer-events:none;opacity:0.85;"
+                          title="Hết vé">
+                        <span th:text="${#temporals.format(row.startTime, 'HH:mm')}">09:00</span>
+                        <span class="ml-2 text-muted" th:text="${row.roomName}">Phòng 1</span>
+                        <span class="ml-2 badge badge-secondary" th:text="${row.screenFormat}">2D</span>
+                        <span class="ml-2 badge badge-danger">Hết vé</span>
+                    </span>
+                </th:block>
+            </div>
+        </div>
 
-            <p class="text-muted mb-0" th:if="${#lists.isEmpty(showtimes)}">Chưa có suất chiếu cho phim này.</p>
+        <div class="cinema-panel p-4" th:if="${#maps.isEmpty(showtimesByDate)}">
+            <p class="text-muted mb-0">Chưa có suất chiếu cho phim này.</p>
         </div>
     </section>
 </main>
@@ -77,5 +105,20 @@
 <div th:replace="~{layout/site-footer :: site-footer}"></div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelectorAll(".day-chip").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            var idx = btn.getAttribute("data-day-index");
+            document.querySelectorAll(".day-chip").forEach(function (b) {
+                b.classList.remove("genre-chip-active");
+            });
+            btn.classList.add("genre-chip-active");
+            document.querySelectorAll(".day-panel").forEach(function (p) {
+                var match = p.getAttribute("data-day-panel") === idx;
+                p.classList.toggle("d-none", !match);
+            });
+        });
+    });
+</script>
 </body>
 </html>

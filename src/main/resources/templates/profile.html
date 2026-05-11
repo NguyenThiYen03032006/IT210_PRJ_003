@@ -21,6 +21,9 @@
 </nav>
 
 <main class="container cinema-section">
+    <div class="alert alert-success" th:if="${param.pwd != null}">
+        Đã cập nhật mật khẩu thành công.
+    </div>
     <div class="row">
         <aside class="col-lg-4 mb-4">
             <div class="cinema-panel p-4 text-center">
@@ -38,6 +41,7 @@
                 <p class="text-muted mb-1">So dien thoai</p>
                 <p th:text="${user.profile.phone != null ? user.profile.phone : 'Chua cap nhat'}">phone</p>
                 <a th:href="@{/edit-profile}" class="btn cinema-btn cinema-btn-gold btn-block">Cap nhat profile</a>
+                <a th:href="@{/change-password}" class="btn cinema-btn cinema-btn-outline btn-block mt-2">Đổi mật khẩu</a>
                 <a th:href="${homeUrl}" class="btn cinema-btn cinema-btn-outline btn-block mt-2">Ve trang chinh</a>
             </div>
         </aside>

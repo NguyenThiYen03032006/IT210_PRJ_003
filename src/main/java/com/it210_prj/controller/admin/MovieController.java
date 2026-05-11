@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/** Quản trị phim MVC: form binding và normalize category/genre rỗng trước khi persist. */
 @Controller
 @RequestMapping("/admin/movies")
 @RequiredArgsConstructor
@@ -39,6 +41,10 @@ public class MovieController {
         return "admin/movie/form";
     }
 
+    /**
+     * Model attribute có thể tạo Category/Genre với id null khi user chọn “trống” —
+     * gán {@code null} cho association để Hibernate không flush proxy rỗng.
+     */
     @PostMapping("/save")
     public String save(@ModelAttribute Movie movie) {
         // Nếu id của category/genre là null, hãy set cả object đó về null
@@ -56,8 +62,13 @@ public class MovieController {
 
     // ... các hàm khác giữ nguyên
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
-        movieService.deleteById(id);
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            movieService.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Xoa phim thanh cong.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/admin/movies";
     }
 

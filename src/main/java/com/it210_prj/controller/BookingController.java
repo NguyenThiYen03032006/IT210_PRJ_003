@@ -6,6 +6,8 @@ import com.it210_prj.model.dto.BookingResponse;
 import com.it210_prj.service.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**  đặt vé / lịch sử / yêu cầu hủy cho khách đã đăng nhập */
 @RestController
 @RequestMapping("/customer/bookings")
 @RequiredArgsConstructor
@@ -35,9 +38,28 @@ public class BookingController {
         );
     }
 
+    /** Yêu cầu hủy;  message */
     @PostMapping("/{bookingId}/cancel")
-    public void cancel(Authentication authentication, @PathVariable Long bookingId) {
-        bookingService.cancelBooking(authentication.getName(), bookingId);
+    public ResponseEntity<?> cancel(
+            Authentication authentication,
+            @PathVariable Long bookingId
+    ) {
+
+        try {
+
+            bookingService.requestCancelBooking(
+                    authentication.getName(),
+                    bookingId
+            );
+
+            return ResponseEntity.ok("Đã gửi yêu cầu hủy vé");
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
     }
 
     @GetMapping("/history")

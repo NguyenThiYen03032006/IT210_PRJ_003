@@ -9,12 +9,48 @@
 <body class="cinema-body">
 <div th:replace="~{layout/site-header :: site-header}"></div>
 
-<section class="hero-banner">
+<section th:if="${#lists.isEmpty(featuredMovies)}" class="hero-banner">
     <div class="container">
         <span class="age-badge">HOT</span>
         <h1 class="hero-title mt-3">Không gian đặt vé điện ảnh hiện đại</h1>
         <p class="hero-copy mt-3">Chọn phim, giữ ghế và thanh toán nhanh cho những suất chiếu mới nhất trong ngày.</p>
         <a class="btn cinema-btn cinema-btn-gold mt-3" href="#now-showing">Đặt vé ngay</a>
+    </div>
+</section>
+
+<section th:unless="${#lists.isEmpty(featuredMovies)}" class="cinema-carousel-wrap border-bottom border-secondary">
+    <div id="heroCarousel" class="carousel slide cinema-carousel" data-ride="carousel" data-interval="6000">
+        <ol class="carousel-indicators">
+            <li th:each="m, it : ${featuredMovies}" data-target="#heroCarousel" th:data-slide-to="${it.index}"
+                th:classappend="${it.first} ? ' active'"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item cinema-carousel-item"
+                 th:each="m, it : ${featuredMovies}"
+                 th:classappend="${it.first} ? ' active'">
+                <img class="d-block w-100 cinema-carousel-bg" th:src="${m.poster}" th:alt="${m.title}">
+                <div class="carousel-caption text-left">
+                    <span class="age-badge" th:text="${m.ageRating != null ? m.ageRating : 'T13'}">T13</span>
+                    <h1 class="hero-title mt-3 mb-3" th:text="${m.title}">Phim</h1>
+                    <p class="hero-copy d-none d-md-block" th:text="${m.description}">Mô tả</p>
+                    <div class="d-flex flex-wrap">
+                        <a class="btn cinema-btn cinema-btn-gold mr-2 mb-2"
+                           th:href="@{/customer/movies/{id}(id=${m.id})}">Đặt vé ngay</a>
+                        <a th:if="${m.trailerUrl != null && !m.trailerUrl.isEmpty()}"
+                           class="btn cinema-btn cinema-btn-outline mb-2"
+                           th:href="${m.trailerUrl}" target="_blank" rel="noopener noreferrer">Xem trailer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#heroCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#heroCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
     </div>
 </section>
 
@@ -24,11 +60,34 @@
             <p class="subtle-label">Now Showing</p>
             <h2 class="mb-0">Phim đang chiếu</h2>
         </div>
-        <a class="btn cinema-btn cinema-btn-outline" th:href="@{/customer/bookings}">Lịch sử vé</a>
+        <a class="btn cinema-btn cinema-btn-outline" th:if="${isCustomer}" th:href="@{/customer/bookings}">Lịch sử vé</a>
     </div>
 
-    <div class="mb-4">
-        <span class="genre-chip" th:each="genre : ${genres}" th:text="${genre.name}">Action</span>
+    <div class="cinema-panel p-3 mb-4" th:if="${hasActiveFilters}">
+        <p class="text-muted small mb-2">Đang lọc danh sách phim bên dưới:</p>
+        <div class="d-flex flex-wrap align-items-center">
+            <span th:if="${searchQuery != null && !searchQuery.isEmpty()}" class="mr-3 mb-1">
+                Từ khóa: <strong class="text-warning" th:text="${searchQuery}"></strong>
+            </span>
+            <span th:if="${selectedGenreName != null}" class="mr-3 mb-1">
+                Thể loại: <strong class="text-warning" th:text="${selectedGenreName}"></strong>
+            </span>
+            <a class="btn btn-sm cinema-btn cinema-btn-outline" th:href="@{/customer/home}">Xóa bộ lọc</a>
+        </div>
+        <p class="text-muted small mt-2 mb-0">
+            Ô tìm trên thanh menu: tìm theo tên phim, mô tả hoặc tên thể loại (trên toàn bộ phim). Các nút tròn dưới đây lọc theo từng thể loại; sau khi chọn thể loại, bạn vẫn có thể thêm từ khóa bằng cách bấm chip khác hoặc chỉnh URL.
+        </p>
+    </div>
+
+    <div class="mb-4 d-flex flex-wrap align-items-center">
+        <a class="genre-chip mr-2 mb-2"
+           th:classappend="${selectedGenreId == null} ? ' genre-chip-active'"
+           th:href="@{/customer/home(q=${searchQuery})}">Tất cả</a>
+        <a class="genre-chip mr-2 mb-2"
+           th:each="genre : ${genres}"
+           th:classappend="${selectedGenreId != null and selectedGenreId == genre.id} ? ' genre-chip-active'"
+           th:href="@{/customer/home(genreId=${genre.id}, q=${searchQuery})}"
+           th:text="${genre.name}">Action</a>
     </div>
 
     <div class="row">
@@ -38,11 +97,15 @@
                      th:src="${movie.poster != null && !movie.poster.isEmpty()} ? ${movie.poster} : 'https://via.placeholder.com/360x540/1a1d26/f2c14e?text=CineGold'"
                      th:alt="${movie.title}">
                 <div class="movie-hover">
-                    <a class="btn cinema-btn cinema-btn-gold" th:href="@{'/customer/movies/' + ${movie.id}}">Xem trailer</a>
+                    <a th:if="${movie.trailerUrl != null && !movie.trailerUrl.isEmpty()}"
+                       class="btn cinema-btn cinema-btn-gold"
+                       th:href="${movie.trailerUrl}" target="_blank" rel="noopener noreferrer">Xem trailer</a>
+                    <a class="btn cinema-btn cinema-btn-gold mt-3"
+                       th:href="@{'/customer/movies/' + ${movie.id}}">Đặt vé ngay</a>
                 </div>
                 <div class="p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="age-badge">T13</span>
+                        <span class="age-badge" th:text="${movie.ageRating != null ? movie.ageRating : 'T13'}">T13</span>
                         <small class="text-muted" th:text="${movie.duration} + ' phút'">120 phút</small>
                     </div>
                     <h5 class="mb-1 text-truncate" th:text="${movie.title}">Tên phim</h5>
@@ -53,8 +116,8 @@
     </div>
 
     <div class="cinema-panel p-5 text-center" th:if="${#lists.isEmpty(movies)}">
-        <h4>Chưa có phim đang chiếu</h4>
-        <p class="text-muted mb-0">Admin hãy thêm phim và suất chiếu để khách đặt vé.</p>
+        <h4>Không tìm thấy phim</h4>
+        <p class="text-muted mb-0">Thử bộ lọc khác hoặc từ khóa ngắn hơn.</p>
     </div>
 </main>
 

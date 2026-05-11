@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface SeatRepository extends JpaRepository<Seat, Long> {
 
+    long countByRoomId(Long roomId);
+
     List<Seat> findByRoomIdOrderBySeatNameAsc(Long roomId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

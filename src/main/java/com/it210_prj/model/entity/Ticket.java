@@ -35,4 +35,5 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "booking_id")
     private Booking booking;
+
 }

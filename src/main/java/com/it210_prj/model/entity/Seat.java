@@ -21,6 +21,9 @@ public class Seat {
 
     private String seatName; // A1, A2...
 
+    /** STANDARD, VIP, COUPLE (Sweetbox) */
+    private String seatType;
+
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;

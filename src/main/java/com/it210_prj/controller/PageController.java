@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,16 +19,28 @@ public class PageController {
 
     private final UserRepository userRepo;
     private final BookingService bookingService;
+    private final PasswordEncoder passwordEncoder;
 
-    public PageController(UserRepository userRepo, BookingService bookingService) {
+    public PageController(
+            UserRepository userRepo,
+            BookingService bookingService,
+            PasswordEncoder passwordEncoder
+    ) {
         this.userRepo = userRepo;
         this.bookingService = bookingService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/auth/login")
     public String loginPage(Model model) {
         model.addAttribute("login", new LoginRequest());
         return "login";
+    }
+
+    /** khi người dùng đã đăng nhập nhưng không đủ quyền truy cập URL. */
+    @GetMapping("/auth/access-denied")
+    public String accessDenied() {
+        return "access-denied";
     }
 
     @PostMapping("/auth/login")
@@ -78,6 +91,7 @@ public class PageController {
             return "login";
         }
     }
+   // lấy user hiện tại
     private User getCurrentUser(Authentication auth) {
         if (auth == null || !auth.isAuthenticated()
                 || auth.getName().equals("anonymousUser")) {
@@ -146,5 +160,39 @@ public class PageController {
         }
 
         return "redirect:/profile-page";
+    }
+
+    @GetMapping("/change-password")
+    public String changePasswordPage() {
+        return "change-password";
+    }
+
+    /** Kiểm tra khớp xác nhận, độ dài tối thiểu và mật khẩu hiện tại trước khi bcrypt mật khẩu mới. */
+    @PostMapping("/change-password")
+    public String changePassword(
+            Authentication auth,
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            Model model
+    ) {
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("error", "Mật khẩu mới và xác nhận không khớp.");
+            return "change-password";
+        }
+        if (newPassword.length() < 6) {
+            model.addAttribute("error", "Mật khẩu mới cần ít nhất 6 ký tự.");
+            return "change-password";
+        }
+
+        User user = getCurrentUser(auth);
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            model.addAttribute("error", "Mật khẩu hiện tại không đúng.");
+            return "change-password";
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+        return "redirect:/profile-page?pwd=ok";
     }
 }

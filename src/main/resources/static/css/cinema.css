@@ -8,8 +8,8 @@
     --cinema-gold: #f4c542;
     --cinema-red: #d95b5b;
     --cinema-green: #27c46b;
-    --cinema-vip: #3f8fd2;
-    --cinema-sweet: #d6a84f;
+    --cinema-vip: #9b59b6;
+    --cinema-sweet: #e91e8c;
 }
 
 body.cinema-body {
@@ -97,6 +97,49 @@ body.cinema-body {
     padding: 8px 14px;
 }
 
+a.genre-chip {
+    text-decoration: none;
+}
+
+a.genre-chip:hover {
+    border-color: var(--cinema-gold);
+    color: var(--cinema-gold);
+    text-decoration: none;
+}
+
+.genre-chip-active {
+    background: rgba(244, 197, 66, 0.18);
+    border-color: var(--cinema-gold);
+    color: var(--cinema-gold);
+}
+
+button.genre-chip.day-chip {
+    background: transparent;
+    cursor: pointer;
+}
+
+.cinema-carousel-wrap {
+    background: var(--cinema-bg);
+}
+
+.cinema-carousel-item {
+    min-height: 440px;
+}
+
+.cinema-carousel-bg {
+    height: 440px;
+    object-fit: cover;
+    opacity: 0.35;
+}
+
+.cinema-carousel .carousel-caption {
+    bottom: 2rem;
+    left: 8%;
+    max-width: 640px;
+    right: auto;
+    text-align: left;
+}
+
 .movie-card {
     background: var(--cinema-panel);
     border: 1px solid var(--cinema-line);
@@ -130,6 +173,16 @@ body.cinema-body {
     transition: opacity 0.2s ease;
 }
 
+.movie-hover {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.movie-hover a {
+    display: block;
+    text-align: center;
+}
 .movie-card:hover .movie-hover {
     opacity: 1;
 }
@@ -338,6 +391,30 @@ body.cinema-body {
     vertical-align: middle;
 }
 
+/* Hiệu ứng hover cho dòng trong bảng */
+.cinema-table.table-hover tbody tr {
+    transition: all 0.2s ease; /* Giúp màu chuyển mượt hơn */
+}
+
+.cinema-table.table-hover tbody tr:hover {
+    background-color: var(--cinema-gold) !important; /* Đổi nền sang vàng */
+    cursor: pointer;
+}
+
+/* Đổi màu toàn bộ chữ bên trong tr khi hover thành màu tối để nổi bật trên nền vàng */
+.cinema-table.table-hover tbody tr:hover td,
+.cinema-table.table-hover tbody tr:hover th,
+.cinema-table.table-hover tbody tr:hover .text-muted,
+.cinema-table.table-hover tbody tr:hover .badge {
+    color: #1a1a1a !important;
+}
+
+/* Tùy chỉnh riêng cho badge khi hover để không bị chìm */
+.cinema-table.table-hover tbody tr:hover .badge {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid #1a1a1a;
+}
+
 .cinema-card {
     background: var(--cinema-panel);
     border: 1px solid var(--cinema-line);
@@ -368,4 +445,43 @@ body.cinema-body {
     .seat-grid {
         grid-template-columns: repeat(5, minmax(38px, 1fr));
     }
+}
+
+/* Phân trang*/
+.pagination .page-item .page-link {
+    background-color: var(--cinema-panel-2); /* Nền xanh đen nhạt hơn panel chính */
+    border: 1px solid var(--cinema-line);
+    color: var(--cinema-muted);
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+}
+
+/* Hiệu ứng khi di chuột qua các con số */
+.pagination .page-item .page-link:hover {
+    background-color: var(--cinema-line);
+    color: var(--cinema-gold);
+    border-color: var(--cinema-gold);
+}
+
+/* Trạng thái trang hiện tại (Active) */
+.pagination .page-item.active .page-link {
+    background-color: var(--cinema-gold);
+    border-color: var(--cinema-gold);
+    color: #17120a; /* Chữ đen đậm để nổi bật trên nền vàng */
+    font-weight: 700;
+}
+
+/* Trạng thái nút bị vô hiệu hóa (Disabled) */
+.pagination .page-item.disabled .page-link {
+    background-color: var(--cinema-bg);
+    border-color: var(--cinema-line);
+    color: #4a5d6e; /* Màu chữ tối hơn */
+    opacity: 0.6;
+}
+
+/* Loại bỏ hiệu ứng bóng đổ mặc định của Bootstrap khi click */
+.pagination .page-item .page-link:focus {
+    box-shadow: 0 0 0 0.2rem rgba(244, 197, 66, 0.25);
+    background-color: var(--cinema-panel-2);
+    color: var(--cinema-gold);
 }

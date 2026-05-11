@@ -1,22 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<nav th:fragment="site-header" class="navbar navbar-expand-lg navbar-dark cinema-nav sticky-top">
+<nav th:fragment="site-header"
+     class="navbar navbar-expand-lg navbar-dark cinema-nav sticky-top">
     <div class="container">
         <a class="navbar-brand cinema-brand" th:href="@{/customer/home}">CineGold</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#cinemaNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div id="cinemaNav" class="collapse navbar-collapse">
-            <form class="form-inline mx-lg-4 my-3 my-lg-0 flex-grow-1">
-                <input class="form-control cinema-search w-100" type="search" placeholder="Tìm phim, thể loại, suất chiếu">
+            <form class="mx-lg-4 my-3 my-lg-0 flex-grow-1" style="min-width: 200px; max-width: 520px;"
+                  th:action="@{/customer/home}" method="get" accept-charset="UTF-8">
+                <div class="input-group">
+                    <input class="form-control cinema-search border-right-0" type="search" name="q" id="navSearchQ"
+                           placeholder="Tên phim, mô tả, thể loại…"
+                           th:value="${searchQuery}"
+                           autocomplete="off"
+                           aria-label="Tìm phim">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn cinema-btn cinema-btn-gold px-3">Tìm</button>
+                    </div>
+                </div>
             </form>
             <ul class="navbar-nav mr-3">
-                <li class="nav-item"><a class="nav-link" th:href="@{/customer/home}">Phim đang chiếu</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/customer/bookings}">Vé của tôi</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/customer/home}">Phim đang chiếu</a>
+                </li>
+                <li class="nav-item" th:if="${isCustomer}">
+                    <a class="nav-link" th:href="@{/customer/bookings}">Vé của tôi</a>
+                </li>
             </ul>
-            <a class="btn cinema-btn cinema-btn-outline mr-2" th:href="@{/profile-page}">Profile</a>
-            <a class="btn cinema-btn cinema-btn-gold" th:href="@{/logout}">Đăng xuất</a>
+            <div class="d-flex flex-wrap align-items-center" th:unless="${loggedIn}">
+                <a class="btn cinema-btn cinema-btn-outline mr-2 mb-2 mb-lg-0" th:href="@{/auth/login}">Đăng nhập</a>
+                <a class="btn cinema-btn cinema-btn-gold mb-2 mb-lg-0" th:href="@{/auth/register-page}">Đăng ký</a>
+            </div>
+            <div class="d-flex flex-wrap align-items-center" th:if="${loggedIn}">
+                <a class="btn cinema-btn cinema-btn-outline mr-2 mb-2 mb-lg-0" th:href="@{/profile-page}">Profile</a>
+                <a class="btn cinema-btn cinema-btn-gold mb-2 mb-lg-0" th:href="@{/logout}">Đăng xuất</a>
+            </div>
         </div>
     </div>
 </nav>

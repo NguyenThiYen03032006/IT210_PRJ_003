@@ -15,6 +15,9 @@
         <a class="btn cinema-btn cinema-btn-outline" th:href="@{/customer/home}">Tiếp tục đặt vé</a>
     </div>
 
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
     <div class="history-ticket p-4 mb-3" th:each="booking : ${bookings}">
         <div class="row align-items-center">
             <div class="col-md-auto mb-3 mb-md-0">
@@ -33,14 +36,18 @@
             <div class="col-md-auto text-md-right mt-3 mt-md-0">
                 <div class="text-warning font-weight-bold"
                      th:text="${#numbers.formatDecimal(booking.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">75,000đ</div>
-                <span class="badge badge-success" th:if="${booking.status == 'PAID'}">Thành công</span>
+                <span class="badge badge-success" th:if="${booking.status == 'PAID'}">Đã thanh toán</span>
+                <span class="badge badge-info" th:if="${booking.status == 'CONFIRMED'}">Đã xác nhận</span>
+                <span class="badge badge-warning text-dark" th:if="${booking.status == 'CANCEL_REQUESTED'}">Đã gửi yêu cầu hủy</span>
                 <span class="badge badge-secondary" th:if="${booking.status == 'CANCELLED'}">Đã hủy</span>
-                <form th:if="${booking.status != 'CANCELLED'}"
+                <a class="btn btn-sm cinema-btn cinema-btn-outline d-block mt-2"
+                   th:href="@{/customer/bookings/{id}(id=${booking.bookingId})}">Hóa đơn chi tiết</a>
+                <form th:if="${booking.status == 'PAID'}"
                       th:action="@{'/customer/bookings/' + ${booking.bookingId} + '/cancel-form'}"
                       method="post"
                       class="mt-2"
-                      onsubmit="return confirm('Bạn có chắc chắn muốn hủy vé? Lưu ý: Chỉ được hoàn tiền/hủy trước suất chiếu 24h');">
-                    <button class="btn btn-sm btn-outline-danger" type="submit">Hủy vé</button>
+                      onsubmit="return confirm('Gửi yêu cầu hủy vé cho nhân viên xử lý?');">
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Gửi yêu cầu hủy</button>
                 </form>
             </div>
         </div>

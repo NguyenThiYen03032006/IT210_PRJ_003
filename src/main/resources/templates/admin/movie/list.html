@@ -19,6 +19,13 @@
                 <a th:href="@{/admin/movies/create}" class="btn cinema-btn cinema-btn-gold">Thêm phim</a>
             </div>
 
+            <div class="alert alert-danger" th:if="${errorMessage}">
+                <span th:text="${errorMessage}">Loi</span>
+            </div>
+            <div class="alert alert-success" th:if="${successMessage}">
+                <span th:text="${successMessage}">Thanh cong</span>
+            </div>
+
             <div class="row">
                 <div class="col-6 col-md-4 col-lg-3 mb-4" th:each="m : ${movies}">
                     <article class="movie-card">

@@ -2,6 +2,7 @@ package com.it210_prj.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,23 +23,29 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Cho phép các tài nguyên tĩnh để giao diện không bị lỗi
+                        //  Cho phép các tài nguyên tĩnh để giao diện không bị lỗi
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
 
-                        // 2. Cho phép vào trang login và các logic liên quan đến auth
+                        //  Cho phép vào trang login và các logic liên quan đến auth
                         .requestMatchers("/auth/**").permitAll()
 
-                        // 3. Phân quyền cho Admin
-                        // LƯU Ý: Nếu trong DB bạn lưu là "ROLE_ADMIN" thì dùng .hasRole("ADMIN")
-                        // Nếu trong DB bạn chỉ lưu "ADMIN" thì dùng .hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,
+                                "/",
+                                "/customer/home",
+                                "/customer/movies/**",
+                                "/customer/showtimes/*/seats"
+                        ).permitAll()
+
+                        //  Phân quyền cho Admin
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                         .requestMatchers("/staff/**").hasAnyAuthority("STAFF", "ROLE_STAFF")
                         .requestMatchers("/customer/**").hasAnyAuthority("CUSTOMER", "ROLE_CUSTOMER")
 
-                        .requestMatchers("/profile-page", "/edit-profile", "/update-profile").authenticated()
+                        .requestMatchers("/profile-page", "/edit-profile", "/update-profile",
+                                "/change-password").authenticated()
 
-                        // 4. Mọi request khác đều phải login
+                        //  Mọi request khác đều phải login
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -54,7 +61,7 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
-                // 5. Thêm phần này để tránh lỗi 404 khi không đủ quyền
+                // tránh lỗi 404 khi không đủ quyền
                 .exceptionHandling(ex -> ex
                         .accessDeniedPage("/auth/access-denied")
                 );

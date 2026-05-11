@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/** CRUD category — ủy quyền repository. */
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -18,6 +19,9 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findAll();
     }
 
+    /**
+     * Không có id → RuntimeException.
+     */
     @Override
     public Category findById(Long id) {
         return categoryRepository.findById(id)

@@ -10,4 +10,7 @@ public interface MovieService {
     Movie save(Movie movie);
     void deleteById(Long id);
 
+    List<Movie> findForCustomer(Long genreId, String q);
+
+    List<Movie> findHotMovies();
 }

@@ -39,6 +39,24 @@
                     <input type="text" class="form-control cinema-input" th:field="*{poster}">
                 </div>
                 <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label>Nhãn lứa tuổi (T13, T16, P)</label>
+                        <input type="text" class="form-control cinema-input" th:field="*{ageRating}" placeholder="T13">
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label>Đạo diễn</label>
+                        <input type="text" class="form-control cinema-input" th:field="*{director}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Trailer URL (YouTube,...)</label>
+                    <input type="text" class="form-control cinema-input" th:field="*{trailerUrl}">
+                </div>
+                <div class="form-group form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="movieHot" th:field="*{hot}">
+                    <label class="form-check-label" for="movieHot">Phim hot — hiển thị ở carousel trang chủ</label>
+                </div>
+                <div class="form-row">
                     <div class="form-group col-md-6">
                         <label>Danh mục</label>
                         <select class="form-control cinema-input" th:field="*{category.id}">
