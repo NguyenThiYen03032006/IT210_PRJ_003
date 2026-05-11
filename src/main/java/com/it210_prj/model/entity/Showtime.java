@@ -20,12 +20,12 @@ public class Showtime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ✔ NHIỀU SHOWTIME -> 1 MOVIE
+    // NHIỀU SHOWTIME -> 1 MOVIE
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    // ✔ NHIỀU SHOWTIME -> 1 ROOM
+    // NHIỀU SHOWTIME -> 1 ROOM
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;

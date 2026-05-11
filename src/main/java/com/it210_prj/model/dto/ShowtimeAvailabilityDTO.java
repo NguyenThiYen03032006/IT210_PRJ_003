@@ -13,6 +13,6 @@ public class ShowtimeAvailabilityDTO {
     private LocalDateTime startTime;
     private String roomName;
     private String screenFormat;
-    /** true khi số vé = số ghế phòng (full). */
+    // true khi số vé = số ghế phòng
     private boolean soldOut;
 }

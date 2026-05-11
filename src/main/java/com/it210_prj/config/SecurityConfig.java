@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 "/customer/showtimes/*/seats"
                         ).permitAll()
 
-                        //  Phân quyền cho Admin
+                        //  Phân quyền
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                         .requestMatchers("/staff/**").hasAnyAuthority("STAFF", "ROLE_STAFF")

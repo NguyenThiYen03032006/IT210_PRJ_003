@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
-// CRUD suất chiếu admin + danh sách có phân trang/lọc (delegate sang {@link com.it210_prj.service.admin.ShowtimeService}).
 @Controller
 @RequestMapping("/admin/showtimes")
 @RequiredArgsConstructor
@@ -80,7 +79,6 @@ public class ShowtimeController {
         return "admin/showtime/list";
     }
 
-    /** Chuỗi rỗng hoặc không parse được Long → null*/
     private static Long parseOptionalLong(String raw) {
         if (raw == null || raw.isBlank()) {
             return null;
@@ -113,7 +111,6 @@ public class ShowtimeController {
         return "redirect:/admin/showtimes";
     }
 
-    /** cập nhật suất  */
     @PostMapping("/{showtimeId}/update")
     public String update(
             @PathVariable Long showtimeId,
@@ -135,7 +132,7 @@ public class ShowtimeController {
         return "redirect:/admin/showtimes";
     }
 
-    /** Xóa suất chỉ khi chưa có vé  */
+    // Xóa suất chỉ khi chưa có vé
     @PostMapping("/{showtimeId}/delete")
     public String delete(
             @PathVariable Long showtimeId,

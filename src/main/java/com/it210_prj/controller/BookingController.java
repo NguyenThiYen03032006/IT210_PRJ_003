@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**  đặt vé / lịch sử / yêu cầu hủy cho khách đã đăng nhập */
 @RestController
 @RequestMapping("/customer/bookings")
 @RequiredArgsConstructor
@@ -38,7 +37,6 @@ public class BookingController {
         );
     }
 
-    /** Yêu cầu hủy;  message */
     @PostMapping("/{bookingId}/cancel")
     public ResponseEntity<?> cancel(
             Authentication authentication,

@@ -21,7 +21,7 @@ public class Seat {
 
     private String seatName; // A1, A2...
 
-    /** STANDARD, VIP, COUPLE (Sweetbox) */
+    // STANDARD, VIP, COUPLE (Sweetbox)
     private String seatType;
 
     @ManyToOne

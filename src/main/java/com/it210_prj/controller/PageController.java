@@ -58,7 +58,7 @@ public class PageController {
             // KIỂM TRA: Nếu đã đăng nhập rồi thì không login nữa
             if (request.getUserPrincipal() != null) {
                 // Có thể thực hiện logout user cũ nếu muốn đăng nhập user mới:
-                // request.logout();
+                request.logout();
             } else {
                 // Chỉ gọi login nếu chưa có Principal (chưa đăng nhập)
                 request.login(req.getUsername(), req.getPassword());

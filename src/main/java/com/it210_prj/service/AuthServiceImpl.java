@@ -8,7 +8,6 @@ import com.it210_prj.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-/** Đăng ký tài khoản khách: kiểm tra email trùng, khớp mật khẩu, mã hóa và gán role CUSTOMER. */
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -20,11 +19,7 @@ public class AuthServiceImpl implements AuthService {
         this.encoder = encoder;
     }
 
-    /**
-     * Tạo User + UserProfile liên kết; password lưu dạng bcrypt.
-     *
-     * @throws RuntimeException email đã tồn tại hoặc password/confirm không khớp
-     */
+
     @Override
     public void register(RegisterRequest req) {
         if (userRepo.findByEmail(req.getEmail()).isPresent()) {

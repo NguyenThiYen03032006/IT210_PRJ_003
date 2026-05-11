@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/** Gom các chỉ số đếm/doanh thu từ repository để hiển thị dashboard admin (read-only). */
 @Service
 @RequiredArgsConstructor
 public class AdminDashboardService {
@@ -36,10 +35,12 @@ public class AdminDashboardService {
      */
     @Transactional(readOnly = true)
     public AdminDashboardStats loadStats() {
+        // tgian
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime dayStart = LocalDate.now().atStartOfDay();
         LocalDateTime nextDay = dayStart.plusDays(1);
 
+        // tinh doanh thu (nz co the doi null thanh 0.0)
         double totalRevenue = nz(bookingRepository.sumTotalPriceActiveBookings());
         double todayRevenue = nz(bookingRepository.sumTotalPriceActiveBookingsInRange(dayStart, nextDay));
 
@@ -63,7 +64,7 @@ public class AdminDashboardService {
                 .build();
     }
 
-    /** Helper: SUM JPQL có thể null khi không có bản ghi. */
+    // doi null thanh 0.0 khi ko co ban ghi
     private static double nz(Double v) {
         return v != null ? v : 0.0;
     }

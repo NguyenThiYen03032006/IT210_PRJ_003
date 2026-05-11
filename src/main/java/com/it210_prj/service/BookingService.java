@@ -9,24 +9,25 @@ import java.util.List;
 
 public interface BookingService {
 
-    /** Đặt vé: kiểm tra suất còn hiệu lực, ghế thuộc phòng và chưa bán, tạo booking PAID và các ticket. */
+    // Đặt vé
     BookingResponse bookTickets(String userEmail, Long showtimeId, List<Long> seatIds);
 
-    /** Khách gửi yêu cầu hủy (chỉ khi đơn PAID); không kiểm tra khoảng cách 24h tại đây. */
+    // Khách gửi yêu cầu hủy đơn
     void requestCancelBooking(String userEmail, Long bookingId);
 
-    /** Gom vé theo booking để hiển thị lịch sử khách hàng. */
+    // Lấy lịch sử đặt vé của khách
     List<BookingHistoryDTO> getHistory(String userEmail);
 
-    /** Chi tiết một hóa đơn nếu đúng chủ (email). */
+    // Lấy chi tiết hóa đơn
     BookingInvoiceDetailDTO getBookingInvoiceDetail(String userEmail, Long bookingId);
 
-    /** Danh sách đặt vé cho nhân viên: phân trang; q rỗng = tất cả, số = theo mã đơn, khác = tìm email. */
+    // Lấy danh sách đặt vé cho nhân viên (có phân trang)
     Page<BookingHistoryDTO> getStaffHistory(String keyword, int page, int size);
 
-    /** Nhân viên xác nhận đã in vé: chuyển trạng thái sang CONFIRMED. */
+    // Nhân viên xác nhận đã in vé
+    // Chuyển trạng thái booking sang CONFIRMED
     void confirmBooking(Long bookingId);
 
-    /** Nhân viên hủy và giải phóng ghế; chỉ khi chưa CONFIRMED và còn ≥24h trước giờ chiếu. */
+    // Nhân viên hủy booking
     void cancelBookingByStaff(Long bookingId);
 }

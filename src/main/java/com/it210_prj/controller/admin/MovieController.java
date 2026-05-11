@@ -22,7 +22,7 @@ public class MovieController {
     private final CategoryService categoryService;
     private final GenreService genreService;
 
-    @GetMapping // Bỏ @RequestMapping("/admin/movies") thừa ở đây
+    @GetMapping
     public String list(Model model) {
         model.addAttribute("movies", movieService.findAll());
         return "admin/movie/list";
@@ -31,7 +31,7 @@ public class MovieController {
     @GetMapping("/create")
     public String createForm(Model model) {
         Movie movie = new Movie();
-        // Khởi tạo sẵn object để tránh lỗi null khi binding field.id
+        // Khởi tạo sẵn object
         movie.setCategory(new Category());
         movie.setGenre(new Genre());
 
@@ -41,10 +41,7 @@ public class MovieController {
         return "admin/movie/form";
     }
 
-    /**
-     * Model attribute có thể tạo Category/Genre với id null khi user chọn “trống” —
-     * gán {@code null} cho association để Hibernate không flush proxy rỗng.
-     */
+
     @PostMapping("/save")
     public String save(@ModelAttribute Movie movie) {
         // Nếu id của category/genre là null, hãy set cả object đó về null
@@ -60,7 +57,6 @@ public class MovieController {
         return "redirect:/admin/movies";
     }
 
-    // ... các hàm khác giữ nguyên
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

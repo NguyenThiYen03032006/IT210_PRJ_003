@@ -17,9 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Quản lý suất chiếu: thời lượng phim, đệm 15 phút giữa suất cùng phòng, và phân trang/lọc admin.
- */
 @Service
 public class ShowtimeService {
 
@@ -32,25 +29,32 @@ public class ShowtimeService {
     @Autowired
     private RoomRepository roomRepository;
 
-    /**
-     * Tạo suất: bắt buộc trong tương lai; endTime = start + duration phim;
-     * cửa sổ xung đột = [start−15p, end+15p] để không chồng lịch phòng.
-     */
-    public void createShowtime(Long movieId, Long roomId, LocalDateTime startTime, String screenFormat) {
+    public void createShowtime(Long movieId,
+                               Long roomId,
+                               LocalDateTime startTime,
+                               String screenFormat) {
+
+        // 1. Kiểm tra thời gian phải ở tương lai
         if (!startTime.isAfter(LocalDateTime.now())) {
-            throw new RuntimeException("Showtime must be in the future");
+            throw new RuntimeException("Suất chiếu phải được tạo ở thời điểm trong tương lai.");
         }
 
+        // 2. Tìm phim theo ID
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phim."));
 
+        // 3. Tìm phòng theo ID
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng chiếu."));
 
+        // 4. Tính thời gian kết thúc (start + thời lượng phim)
         LocalDateTime endTime = startTime.plusMinutes(movie.getDuration());
+
+        // 5. Tạo khoảng kiểm tra xung đột (cộng/trừ 15 phút dọn phòng)
         LocalDateTime conflictStart = startTime.minusMinutes(15);
         LocalDateTime conflictEnd = endTime.plusMinutes(15);
 
+        // 6. Kiểm tra có suất chiếu nào trùng phòng và khung giờ không
         List<Showtime> conflicts = showtimeRepository.findConflict(
                 roomId,
                 conflictStart,
@@ -58,43 +62,60 @@ public class ShowtimeService {
         );
 
         if (!conflicts.isEmpty()) {
-            throw new RuntimeException("Room is already booked in this time slot!");
+            throw new RuntimeException("Phòng đã được đặt trong khung giờ này.");
         }
 
+        // 7. Tạo đối tượng suất chiếu mới
         Showtime showtime = new Showtime();
         showtime.setMovie(movie);
         showtime.setRoom(room);
         showtime.setStartTime(startTime);
         showtime.setEndTime(endTime);
         showtime.setStatus("ACTIVE");
+
+        // Nếu không nhập định dạng màn hình thì mặc định là 2D
         showtime.setScreenFormat(
-                screenFormat != null && !screenFormat.isBlank() ? screenFormat.trim() : "2D"
+                screenFormat != null && !screenFormat.isBlank()
+                        ? screenFormat.trim()
+                        : "2D"
         );
 
+        // 8. Lưu vào database
         showtimeRepository.save(showtime);
     }
 
-    /**
-     * Cập nhật suất giữ nguyên logic create nhưng loại trừ chính showtimeId khỏi kiểm tra trùng phòng.
-     */
-    public void updateShowtime(Long showtimeId, Long movieId, Long roomId, LocalDateTime startTime, String screenFormat) {
+
+    public void updateShowtime(Long showtimeId,
+                               Long movieId,
+                               Long roomId,
+                               LocalDateTime startTime,
+                               String screenFormat) {
+
+        // 1. Kiểm tra thời gian phải ở tương lai
         if (!startTime.isAfter(LocalDateTime.now())) {
-            throw new RuntimeException("Showtime must be in the future");
+            throw new RuntimeException("Thời gian suất chiếu phải ở tương lai.");
         }
 
+        // 2. Tìm suất chiếu
         Showtime showtime = showtimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new RuntimeException("Showtime not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy suất chiếu."));
 
+        // 3. Tìm phim
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phim."));
 
+        // 4. Tìm phòng
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng chiếu."));
 
+        // 5. Tính lại thời gian kết thúc
         LocalDateTime endTime = startTime.plusMinutes(movie.getDuration());
+
+        // 6. Khoảng kiểm tra xung đột (±15 phút)
         LocalDateTime conflictStart = startTime.minusMinutes(15);
         LocalDateTime conflictEnd = endTime.plusMinutes(15);
 
+        // 7. Kiểm tra trùng phòng (loại trừ chính suất đang sửa)
         List<Showtime> conflicts = showtimeRepository.findConflictExcludingId(
                 showtimeId,
                 roomId,
@@ -103,45 +124,49 @@ public class ShowtimeService {
         );
 
         if (!conflicts.isEmpty()) {
-            throw new RuntimeException("Room is already booked in this time slot!");
+            throw new RuntimeException("Phòng đã được đặt trong khung giờ này.");
         }
 
+        // 8. Cập nhật dữ liệu
         showtime.setMovie(movie);
         showtime.setRoom(room);
         showtime.setStartTime(startTime);
         showtime.setEndTime(endTime);
+
         showtime.setScreenFormat(
-                screenFormat != null && !screenFormat.isBlank() ? screenFormat.trim() : "2D"
+                screenFormat != null && !screenFormat.isBlank()
+                        ? screenFormat.trim()
+                        : "2D"
         );
+
+        // Nếu trạng thái chưa có thì đặt mặc định ACTIVE
         if (showtime.getStatus() == null || showtime.getStatus().isBlank()) {
             showtime.setStatus("ACTIVE");
         }
 
+        // 9. Lưu lại
         showtimeRepository.save(showtime);
     }
 
-    /** Chỉ xóa khi chưa có vé đặt (đếm ticket của suất). */
     public void deleteShowtime(Long showtimeId) {
+
         Showtime showtime = showtimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new RuntimeException("Showtime not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy suất chiếu."));
 
         long bookedSeats = showtimeRepository.countBookedSeats(showtimeId);
+
         if (bookedSeats > 0) {
-            throw new RuntimeException("Khong the xoa suat chieu da co ve duoc dat.");
+            throw new RuntimeException("Không thể xóa suất chiếu vì đã có vé được đặt.");
         }
 
         showtimeRepository.delete(showtime);
     }
 
-    /** Danh sách đầy đủ (không lọc); dùng cho báo cáo đơn giản hoặc tích hợp khác. */
     public List<Showtime> findAll() {
         return showtimeRepository.findAll();
     }
 
-    /**
-     * Danh sách admin có phân trang: lọc tùy chọn theo phim, phòng, tên phim (LIKE),
-     * và khoảng ngày dựa trên {@code startTime} (toDate inclusive đến hết ngày).
-     */
+    // Phân trang + lọc
     @Transactional(readOnly = true)
     public Page<Showtime> findAdminPage(
             Long movieId,
@@ -151,35 +176,48 @@ public class ShowtimeService {
             LocalDate toDate,
             Pageable pageable
     ) {
+
         Specification<Showtime> spec = (root, cq, cb) -> cb.conjunction();
 
+        // Lọc theo phim
         if (movieId != null) {
-            spec = spec.and((root, cq, cb) -> cb.equal(root.get("movie").get("id"), movieId));
+            spec = spec.and((root, cq, cb) ->
+                    cb.equal(root.get("movie").get("id"), movieId));
         }
+
+        // Lọc theo phòng
         if (roomId != null) {
-            spec = spec.and((root, cq, cb) -> cb.equal(root.get("room").get("id"), roomId));
+            spec = spec.and((root, cq, cb) ->
+                    cb.equal(root.get("room").get("id"), roomId));
         }
+
+        // Lọc theo tên phim (không phân biệt hoa thường)
         if (keyword != null && !keyword.isBlank()) {
             String pattern = "%" + keyword.trim().toLowerCase() + "%";
-            spec = spec.and((root, cq, cb) -> cb.like(cb.lower(root.get("movie").get("title")), pattern));
+            spec = spec.and((root, cq, cb) ->
+                    cb.like(cb.lower(root.get("movie").get("title")), pattern));
         }
+
+        // Lọc từ ngày
         if (fromDate != null) {
             LocalDateTime start = fromDate.atStartOfDay();
-            spec = spec.and((root, cq, cb) -> cb.greaterThanOrEqualTo(root.get("startTime"), start));
+            spec = spec.and((root, cq, cb) ->
+                    cb.greaterThanOrEqualTo(root.get("startTime"), start));
         }
+
+        // Lọc đến ngày (bao gồm hết ngày đó)
         if (toDate != null) {
             LocalDateTime endExclusive = toDate.plusDays(1).atStartOfDay();
-            spec = spec.and((root, cq, cb) -> cb.lessThan(root.get("startTime"), endExclusive));
+            spec = spec.and((root, cq, cb) ->
+                    cb.lessThan(root.get("startTime"), endExclusive));
         }
 
         return showtimeRepository.findAll(spec, pageable);
     }
 
-    /** Suất có startTime sau thời điểm hiện tại (theo query repository). */
+
     public List<Showtime> findUpcoming() {
         return showtimeRepository.findUpcomingShowtimes();
     }
-
-
 
 }
