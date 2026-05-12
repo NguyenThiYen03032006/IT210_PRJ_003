@@ -102,7 +102,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     );
 
     @Query("""
-            SELECT new com.it210_prj.model.dto.MovieTicketStatDTO(m.title, COUNT(t.id))
+            SELECT new com.it210_prj.model.dto.MovieTicketStatDTO(COALESCE(m.title, '(Khong co ten)'), COUNT(t.id))
             FROM Ticket t
             JOIN t.showtime st
             JOIN st.movie m

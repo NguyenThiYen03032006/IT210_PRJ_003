@@ -125,30 +125,30 @@
                 </div>
             </div>
 
-            <div class="cinema-panel p-4">
-                <h5 class="mb-3">Top phim theo so ve da ban</h5>
-                <div class="table-responsive">
-                    <table class="table table-borderless mb-0">
-                        <thead>
-                        <tr class="text-muted small">
-                            <th>#</th>
-                            <th>Ten phim</th>
-                            <th class="text-right">So ve</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="row, it : ${dash.topMoviesByTickets}">
-                            <td th:text="${it.count}">1</td>
-                            <td th:text="${row.movieTitle}">Phim</td>
-                            <td class="text-right font-weight-bold text-warning" th:text="${row.ticketCount}">0</td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(dash.topMoviesByTickets)}">
-                            <td colspan="3" class="text-muted text-center py-4">Chua co du lieu ve.</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<!--            <div class="cinema-panel p-4">-->
+<!--                <h5 class="mb-3">Top phim theo so ve da ban</h5>-->
+<!--                <div class="table-responsive">-->
+<!--                    <table class="table table-borderless mb-0">-->
+<!--                        <thead>-->
+<!--                        <tr class="text-muted small">-->
+<!--                            <th>#</th>-->
+<!--                            <th>Ten phim</th>-->
+<!--                            <th class="text-right">So ve</th>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody>-->
+<!--                        <tr th:each="row, it : ${dash.topMoviesByTickets}">-->
+<!--                            <td th:text="${it.count}">1</td>-->
+<!--                            <td th:text="${(row.movieTitle != null and !#strings.isEmpty(row.movieTitle)) ? row.movieTitle : '(Khong co ten)'}">Phim</td>-->
+<!--                            <td class="text-right font-weight-bold text-warning" th:text="${row.ticketCount}">0</td>-->
+<!--                        </tr>-->
+<!--                        <tr th:if="${#lists.isEmpty(dash.topMoviesByTickets)}">-->
+<!--                            <td colspan="3" class="text-muted text-center py-4">Chua co du lieu ve.</td>-->
+<!--                        </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--            </div>-->
         </main>
     </div>
 </div>

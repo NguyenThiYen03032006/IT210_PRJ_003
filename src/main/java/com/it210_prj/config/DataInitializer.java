@@ -18,6 +18,7 @@ import com.it210_prj.repository.SeatRepository;
 import com.it210_prj.repository.ShowtimeRepository;
 import com.it210_prj.repository.TicketRepository;
 import com.it210_prj.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,6 +30,8 @@ import java.time.LocalDateTime;
 
 @Configuration
 public class DataInitializer {
+    @Value("${app.seed.reset-on-start:false}")
+    private boolean resetOnStart;
 
     private static final LocalDateTime SHOW_PAST_R1_MORNING =
             LocalDateTime.of(2026, 5, 1, 9, 0);
@@ -63,14 +66,28 @@ public class DataInitializer {
             PasswordEncoder encoder
     ) {
         return args -> {
-            resetTestData(jdbcTemplate);
             ensureSeedSchema(jdbcTemplate);
             migrateTicketsForSoftCancel(jdbcTemplate);
 
-            seedUsers(userRepository, encoder);
-            SeedCatalog catalog = seedCatalog(categoryRepository, genreRepository, movieRepository);
-            SeedRooms rooms = seedRooms(roomRepository, seatRepository);
-            seedShowtimes(showtimeRepository, catalog, rooms);
+            if (resetOnStart) {
+                resetTestData(jdbcTemplate);
+                seedUsers(userRepository, encoder);
+                SeedCatalog catalog = seedCatalog(categoryRepository, genreRepository, movieRepository);
+                SeedRooms rooms = seedRooms(roomRepository, seatRepository);
+                seedShowtimes(showtimeRepository, catalog, rooms);
+                return;
+            }
+
+            boolean isEmptyForInitialSeed = userRepository.count() == 0
+                    && movieRepository.count() == 0
+                    && roomRepository.count() == 0
+                    && showtimeRepository.count() == 0;
+            if (isEmptyForInitialSeed) {
+                seedUsers(userRepository, encoder);
+                SeedCatalog catalog = seedCatalog(categoryRepository, genreRepository, movieRepository);
+                SeedRooms rooms = seedRooms(roomRepository, seatRepository);
+                seedShowtimes(showtimeRepository, catalog, rooms);
+            }
         };
     }
 
