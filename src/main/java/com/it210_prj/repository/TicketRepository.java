@@ -12,9 +12,13 @@ import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-    boolean existsByShowtimeIdAndSeatId(Long showtimeId, Long seatId);
-
-    long countByShowtimeId(Long showtimeId);
+    @Query("""
+        SELECT COUNT(t)
+        FROM Ticket t
+        WHERE t.showtime.id = :showtimeId
+        AND (t.status IS NULL OR t.status IN ('ACTIVE', 'AVTIVE'))
+        """)
+    long countByShowtimeId(@Param("showtimeId") Long showtimeId);
 
     List<Ticket> findByBookingId(Long bookingId);
 
@@ -31,13 +35,12 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     """)
     List<Ticket> findByBookingIdsWithDetails(@Param("bookingIds") Collection<Long> bookingIds);
 
-    void deleteByBookingId(Long bookingId);
-
     @Query("""
         SELECT t.seat.id
         FROM Ticket t
         WHERE t.showtime.id = :showtimeId
         AND t.seat.id IN :seatIds
+        AND (t.status IS NULL OR t.status IN ('ACTIVE', 'AVTIVE'))
     """)
     List<Long> findBookedSeatIds(
             @Param("showtimeId") Long showtimeId,
@@ -48,6 +51,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
         SELECT t.seat.id
         FROM Ticket t
         WHERE t.showtime.id = :showtimeId
+        AND (t.status IS NULL OR t.status IN ('ACTIVE', 'AVTIVE'))
     """)
     List<Long> findBookedSeatIdsByShowtimeId(@Param("showtimeId") Long showtimeId);
 
@@ -102,6 +106,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             FROM Ticket t
             JOIN t.showtime st
             JOIN st.movie m
+            WHERE (t.status IS NULL OR t.status IN ('ACTIVE', 'AVTIVE'))
             GROUP BY m.id, m.title
             ORDER BY COUNT(t.id) DESC
             """)

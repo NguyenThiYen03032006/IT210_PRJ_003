@@ -65,6 +65,7 @@ public class DataInitializer {
         return args -> {
             resetTestData(jdbcTemplate);
             ensureSeedSchema(jdbcTemplate);
+            migrateTicketsForSoftCancel(jdbcTemplate);
 
             seedUsers(userRepository, encoder);
             SeedCatalog catalog = seedCatalog(categoryRepository, genreRepository, movieRepository);
@@ -118,6 +119,65 @@ public class DataInitializer {
     private void ensureSeedSchema(JdbcTemplate jdbcTemplate) {
         if (tableExists(jdbcTemplate, "rooms") && !columnExists(jdbcTemplate, "rooms", "total_seats")) {
             jdbcTemplate.execute("ALTER TABLE rooms ADD COLUMN total_seats INT NULL");
+        }
+    }
+
+    /**
+     * Bỏ unique (showtime, seat) cũ nếu còn; thêm status + hold_key để hủy vé không xóa dòng.
+     */
+    private void migrateTicketsForSoftCancel(JdbcTemplate jdbcTemplate) {
+        if (!tableExists(jdbcTemplate, "tickets")) {
+            return;
+        }
+        dropIndexIfExists(jdbcTemplate, "tickets", "uk_ticket_showtime_seat");
+        if (!columnExists(jdbcTemplate, "tickets", "status")) {
+            jdbcTemplate.execute(
+                    "ALTER TABLE tickets ADD COLUMN status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE'"
+            );
+        }
+        jdbcTemplate.execute(
+                "UPDATE tickets SET status = 'ACTIVE' WHERE status IS NULL OR status = '' OR status = 'AVTIVE'"
+        );
+        if (!columnExists(jdbcTemplate, "tickets", "hold_key")) {
+            jdbcTemplate.execute("ALTER TABLE tickets ADD COLUMN hold_key VARCHAR(128) NULL");
+        }
+        jdbcTemplate.execute(
+                """
+                UPDATE tickets
+                SET hold_key = CONCAT(showtime_id, ':', seat_id)
+                WHERE hold_key IS NULL AND status = 'ACTIVE'
+                """
+        );
+        ensureHoldKeyUniqueIndex(jdbcTemplate);
+    }
+
+    private void ensureHoldKeyUniqueIndex(JdbcTemplate jdbcTemplate) {
+        Integer uniqueOnHoldKey = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(DISTINCT index_name) FROM information_schema.statistics
+                WHERE table_schema = DATABASE() AND table_name = 'tickets'
+                AND column_name = 'hold_key' AND non_unique = 0
+                """,
+                Integer.class
+        );
+        if (uniqueOnHoldKey != null && uniqueOnHoldKey > 0) {
+            return;
+        }
+        jdbcTemplate.execute("ALTER TABLE tickets ADD UNIQUE KEY uk_tickets_hold_key (hold_key)");
+    }
+
+    private void dropIndexIfExists(JdbcTemplate jdbcTemplate, String tableName, String indexName) {
+        Integer n = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*) FROM information_schema.statistics
+                WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?
+                """,
+                Integer.class,
+                tableName,
+                indexName
+        );
+        if (n != null && n > 0) {
+            jdbcTemplate.execute("ALTER TABLE " + tableName + " DROP INDEX " + indexName);
         }
     }
 

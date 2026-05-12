@@ -64,11 +64,12 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long>, JpaSp
     """)
     List<Showtime> findExpiredShowtimes();
 
-    // Đếm số ghế đã đặt
+    // Đếm số ghế đang giữ (vé ACTIVE)
     @Query("""
         SELECT COUNT(t.id)
         FROM Ticket t
         WHERE t.showtime.id = :showtimeId
+        AND (t.status IS NULL OR t.status IN ('ACTIVE', 'AVTIVE'))
     """)
     long countBookedSeats(@Param("showtimeId") Long showtimeId);
 

@@ -87,6 +87,8 @@ public class BookingServiceImpl implements BookingService {
             ticket.setBooking(booking);
             ticket.setShowtime(showtime);
             ticket.setSeat(seat);
+            ticket.setStatus("ACTIVE");
+            ticket.setHoldKey(showtime.getId() + ":" + seat.getId());
             ticketRepository.save(ticket);
         }
 
@@ -242,7 +244,11 @@ public class BookingServiceImpl implements BookingService {
         }
 
         booking.setStatus("CANCELLED");
-        ticketRepository.deleteByBookingId(bookingId);
+        for (Ticket ticket : tickets) {
+            ticket.setStatus("CANCELLED");
+            ticket.setHoldKey(null);
+        }
+        ticketRepository.saveAll(tickets);
         bookingRepository.save(booking);
     }
 

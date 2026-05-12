@@ -43,54 +43,6 @@ public class PageController {
         return "access-denied";
     }
 
-    @PostMapping("/auth/login")
-    public String login(
-            @Valid @ModelAttribute("login") LoginRequest req,
-            BindingResult result,
-            Model model,
-            HttpServletRequest request
-    ) {
-        if (result.hasErrors()) {
-            return "login";
-        }
-
-        try {
-            // KIỂM TRA: Nếu đã đăng nhập rồi thì không login nữa
-            if (request.getUserPrincipal() != null) {
-                // Có thể thực hiện logout user cũ nếu muốn đăng nhập user mới:
-                request.logout();
-            } else {
-                // Chỉ gọi login nếu chưa có Principal (chưa đăng nhập)
-                request.login(req.getUsername(), req.getPassword());
-            }
-
-            User user = userRepo.findByEmail(req.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Khong tim thay nguoi dung."));
-
-            String role = user.getRole().name();
-
-            if ("ADMIN".equals(role)) {
-                return "redirect:/admin/home";
-            } else if ("STAFF".equals(role)) {
-                return "redirect:/staff/home";
-            } else {
-                return "redirect:/customer/home";
-            }
-
-        } catch (ServletException e) {
-            // Lỗi này xảy ra khi request.login thất bại hoặc "already authenticated"
-            if (e.getMessage().contains("already authenticated")) {
-                // Nếu đã đăng nhập rồi, redirect thẳng tới trang chủ tương ứng
-                return "redirect:/profile-page";
-            }
-            model.addAttribute("loginError", "Tai khoan hoac mat khau khong chinh xac.");
-            return "login";
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("loginError", "Da co loi he thong xay ra.");
-            return "login";
-        }
-    }
    // lấy user hiện tại
     private User getCurrentUser(Authentication auth) {
         if (auth == null || !auth.isAuthenticated()
@@ -102,6 +54,58 @@ public class PageController {
                 .orElseThrow(() -> new RuntimeException("User khong ton tai."));
     }
 
+    @PostMapping("/auth/login")
+    public String login(
+            @Valid @ModelAttribute("login") LoginRequest req,
+            BindingResult result,
+            Model model,
+            HttpServletRequest request
+    ) {
+
+//        if(result.hasErrors()){
+//            return "login";
+//        }
+
+         User user= userRepo.findByEmail(req.getUsername()).orElse(null);
+
+        // Kiểm tra tồn tại email nếu có nhập
+        if (req.getUsername() != null && !req.getUsername().isBlank()) {
+            user = userRepo.findByEmail(req.getUsername()).orElse(null);
+        }
+
+        boolean loginInvalid = false;
+
+        // Nếu không tìm thấy user hoặc sai mật khẩu
+        if (user == null ||
+                (req.getPassword() != null &&
+                        !req.getPassword().isBlank() &&
+                        !passwordEncoder.matches(req.getPassword(), user.getPassword()))) {
+
+            loginInvalid = true;
+        }
+
+        // Nếu có lỗi validate hoặc login sai
+        if (result.hasErrors() || loginInvalid) {
+            if (loginInvalid) {
+                model.addAttribute("loginError",
+                        "Tai khoan hoac mat khau khong chinh xac.");
+            }
+            return "login";
+        }
+
+        try {
+            request.login(req.getUsername(), req.getPassword());
+        } catch (ServletException e) {
+            model.addAttribute("loginError", "Da co loi he thong.");
+            return "login";
+        }
+
+        String role = user.getRole().name();
+
+        if ("ADMIN".equals(role)) return "redirect:/admin/home";
+        if ("STAFF".equals(role)) return "redirect:/staff/home";
+        return "redirect:/customer/home";
+    }
     @GetMapping("/profile-page")
     public String profile(Authentication auth, Model model) {
 

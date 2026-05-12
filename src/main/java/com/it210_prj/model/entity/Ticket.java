@@ -30,7 +30,18 @@ public class Ticket {
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
-    // them thuoc tinh status  (ACTIVE / CANCELLED)
+    /** ACTIVE = giu ghe; CANCELLED = da huy, khong chiem cho */
+    @Column(nullable = false, length = 32)
+    private String status;
 
+    /** Duy nhat cho moi cap (showtime, ghe) dang ACTIVE; NULL khi CANCELLED */
+    @Column(name = "hold_key", unique = true, length = 128)
+    private String holdKey;
 
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = "ACTIVE";
+        }
+    }
 }

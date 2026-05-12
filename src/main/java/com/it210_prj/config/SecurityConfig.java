@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/customer/**").hasAnyAuthority("CUSTOMER", "ROLE_CUSTOMER")
 
                         .requestMatchers("/profile-page", "/edit-profile", "/update-profile",
-                                "/change-password").authenticated()
+                                "/change-password").authenticated()// co trang thai dang nhap mơi đc truy cap trang
 
                         //  Mọi request khác đều phải login
                         .anyRequest().authenticated()
