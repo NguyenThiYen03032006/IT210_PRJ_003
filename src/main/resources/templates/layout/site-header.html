@@ -13,30 +13,30 @@
                   th:action="@{/customer/home}" method="get" accept-charset="UTF-8">
                 <div class="input-group">
                     <input class="form-control cinema-search border-right-0" type="search" name="q" id="navSearchQ"
-                           placeholder="Tên phim, mô tả, thể loại…"
+                           placeholder="Ten phim, mo ta, the loai..."
                            th:value="${searchQuery}"
                            autocomplete="off"
-                           aria-label="Tìm phim">
+                           aria-label="Tim phim">
                     <div class="input-group-append">
-                        <button type="submit" class="btn cinema-btn cinema-btn-gold px-3">Tìm</button>
+                        <button type="submit" class="btn cinema-btn cinema-btn-gold px-3">Tim</button>
                     </div>
                 </div>
             </form>
             <ul class="navbar-nav mr-3">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/customer/home}">Phim đang chiếu</a>
+                    <a class="nav-link" th:href="@{/customer/home}">Phim dang chieu</a>
                 </li>
                 <li class="nav-item" th:if="${isCustomer}">
-                    <a class="nav-link" th:href="@{/customer/bookings}">Vé của tôi</a>
+                    <a class="nav-link" th:href="@{/customer/bookings}">Ve cua toi</a>
                 </li>
             </ul>
             <div class="d-flex flex-wrap align-items-center" th:unless="${loggedIn}">
-                <a class="btn cinema-btn cinema-btn-outline mr-2 mb-2 mb-lg-0" th:href="@{/auth/login}">Đăng nhập</a>
-                <a class="btn cinema-btn cinema-btn-gold mb-2 mb-lg-0" th:href="@{/auth/register-page}">Đăng ký</a>
+                <a class="btn cinema-btn cinema-btn-outline mr-2 mb-2 mb-lg-0" th:href="@{/auth/login}">Dang nhap</a>
+                <a class="btn cinema-btn cinema-btn-gold mb-2 mb-lg-0" th:href="@{/auth/register-page}">Dang ky</a>
             </div>
             <div class="d-flex flex-wrap align-items-center" th:if="${loggedIn}">
                 <a class="btn cinema-btn cinema-btn-outline mr-2 mb-2 mb-lg-0" th:href="@{/profile-page}">Profile</a>
-                <a class="btn cinema-btn cinema-btn-gold mb-2 mb-lg-0" th:href="@{/logout}">Đăng xuất</a>
+                <a class="btn cinema-btn cinema-btn-gold mb-2 mb-lg-0" th:href="@{/logout}">Dang xuat</a>
             </div>
         </div>
     </div>

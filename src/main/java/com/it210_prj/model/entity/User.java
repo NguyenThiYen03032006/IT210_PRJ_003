@@ -22,11 +22,11 @@ public class User {
 
     private String username;
 
-    @NotBlank(message = "Email không được để trống")
+    @NotBlank(message = "Email khong duoc de trong")
     @Column(unique = true)
     private String email;
 
-    @NotBlank(message = "Password không được để tống")
+    @NotBlank(message = "Mat khau khong duoc de trong")
     private String password;
 
     @Enumerated(EnumType.STRING)

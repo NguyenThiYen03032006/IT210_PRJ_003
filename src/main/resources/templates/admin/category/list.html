@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Danh mục</title>
+    <title>Danh muc</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/cinema.css}">
 </head>
@@ -14,17 +14,17 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <p class="subtle-label">Categories</p>
-                    <h1 class="page-title">Danh mục phim</h1>
+                    <h1 class="page-title">Danh muc phim</h1>
                 </div>
-                <a th:href="@{/admin/categories/create}" class="btn cinema-btn cinema-btn-gold">Thêm danh mục</a>
+                <a th:href="@{/admin/categories/create}" class="btn cinema-btn cinema-btn-gold">Them danh muc</a>
             </div>
             <div class="cinema-panel p-4">
                 <table class="table cinema-table">
                     <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Tên danh mục</th>
-                        <th class="text-right">Hành động</th>
+                        <th>Ten danh muc</th>
+                        <th class="text-right">Hanh dong</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -32,10 +32,10 @@
                         <td th:text="${c.id}">1</td>
                         <td th:text="${c.name}">Now Showing</td>
                         <td class="text-right">
-                            <a th:href="@{'/admin/categories/edit/' + ${c.id}}" class="btn btn-sm cinema-btn cinema-btn-outline">Sửa</a>
+                            <a th:href="@{'/admin/categories/edit/' + ${c.id}}" class="btn btn-sm cinema-btn cinema-btn-outline">Sua</a>
                             <a th:href="@{'/admin/categories/delete/' + ${c.id}}"
                                class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('Xóa danh mục này?')">Xóa</a>
+                               onclick="return confirm('Xoa danh muc nay?')">Xoa</a>
                         </td>
                     </tr>
                     </tbody>

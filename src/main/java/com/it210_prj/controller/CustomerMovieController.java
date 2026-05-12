@@ -116,7 +116,7 @@ public class CustomerMovieController {
         // Tìm suất chiếu theo ID
         Showtime showtime = showtimeRepository.findById(showtimeId)
                 .orElseThrow(() ->
-                        new RuntimeException("Showtime not found"));
+                        new RuntimeException("Khong tim thay suat chieu."));
 
         Long movieId = showtime.getMovie().getId();
 
@@ -125,7 +125,7 @@ public class CustomerMovieController {
 
             redirectAttributes.addFlashAttribute(
                     "infoMessage",
-                    "Suất chiếu đã qua giờ, không thể đặt vé."
+                    "Suat chieu da qua gio, khong the dat ve."
             );
 
             return "redirect:/customer/movies/" + movieId;
@@ -142,7 +142,7 @@ public class CustomerMovieController {
 
             redirectAttributes.addFlashAttribute(
                     "infoMessage",
-                    "Suất chiếu đã hết vé."
+                    "Suat chieu da het ve."
             );
 
             return "redirect:/customer/movies/" + movieId;

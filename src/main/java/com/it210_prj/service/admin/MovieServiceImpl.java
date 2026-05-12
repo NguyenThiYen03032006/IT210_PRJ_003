@@ -23,7 +23,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Movie findById(Long id) {
         return movieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay phim."));
     }
 
 

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Chọn ghế</title>
+    <title>Chon ghe</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/cinema.css}">
 </head>
@@ -15,7 +15,7 @@
 <main class="container cinema-section">
     <div class="row">
         <div class="col-lg-8 mb-4">
-            <div class="screen-arc">MÀN HÌNH</div>
+            <div class="screen-arc">MAN HINH</div>
             <div class="seat-grid mx-auto">
                 <button th:each="seat : ${seats}"
                         type="button"
@@ -27,27 +27,27 @@
                 </button>
             </div>
             <div class="d-flex flex-wrap justify-content-center mt-4 text-muted">
-                <span class="mr-4"><span class="seat d-inline-flex" style="width:26px;height:26px;"></span> Thường</span>
+                <span class="mr-4"><span class="seat d-inline-flex" style="width:26px;height:26px;"></span> Thuong</span>
                 <span class="mr-4"><span class="seat vip d-inline-flex" style="width:26px;height:26px;"></span> VIP</span>
                 <span class="mr-4"><span class="seat sweetbox d-inline-flex" style="width:26px;height:26px;"></span> Sweetbox</span>
-                <span class="mr-4"><span class="seat sold d-inline-flex" style="width:26px;height:26px;">X</span> Đã bán</span>
-                <span><span class="seat selected d-inline-flex" style="width:26px;height:26px;"></span> Đang chọn</span>
+                <span class="mr-4"><span class="seat sold d-inline-flex" style="width:26px;height:26px;">X</span> Da ban</span>
+                <span><span class="seat selected d-inline-flex" style="width:26px;height:26px;"></span> Dang chon</span>
             </div>
         </div>
 
         <aside class="col-lg-4">
             <div class="cinema-panel p-4 sticky-top" style="top: 86px;">
-                <h4 th:text="${showtime.movie.title}">Tên phim</h4>
+                <h4 th:text="${showtime.movie.title}">Ten phim</h4>
                 <p class="text-muted mb-2">
-                    <span th:text="${showtime.room.name}">Phòng</span>
-                    <span class="mx-2">•</span>
+                    <span th:text="${showtime.room.name}">Phong</span>
+                    <span class="mx-2">-</span>
                     <span th:text="${#temporals.format(showtime.startTime, 'dd/MM/yyyy HH:mm')}">07/05/2026 19:00</span>
                 </p>
                 <hr style="border-color: var(--cinema-line);">
-                <p>Ghế đã chọn: <strong data-selected-seats>Chưa chọn</strong></p>
-                <p>Tạm tính: <strong class="text-warning" data-total-price>0đ</strong></p>
+                <p>Ghe da chon: <strong data-selected-seats>Chua chon</strong></p>
+                <p>Tam tinh: <strong class="text-warning" data-total-price>0d</strong></p>
                 <form data-booking-form th:attr="data-showtime-id=${showtime.id}">
-                    <button type="submit" class="btn cinema-btn cinema-btn-gold btn-block">Thanh toán</button>
+                    <button type="submit" class="btn cinema-btn cinema-btn-gold btn-block">Thanh toan</button>
                 </form>
                 <p class="text-danger mt-3 mb-0" data-booking-message></p>
             </div>

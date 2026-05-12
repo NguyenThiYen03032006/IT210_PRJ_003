@@ -50,7 +50,7 @@ public class BookingController {
                     bookingId
             );
 
-            return ResponseEntity.ok("Đã gửi yêu cầu hủy vé");
+            return ResponseEntity.ok("Da gui yeu cau huy ve.");
 
         } catch (RuntimeException e) {
 

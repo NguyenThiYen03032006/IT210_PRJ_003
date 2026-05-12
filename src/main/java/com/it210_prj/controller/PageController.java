@@ -65,7 +65,7 @@ public class PageController {
             }
 
             User user = userRepo.findByEmail(req.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("Khong tim thay nguoi dung."));
 
             String role = user.getRole().name();
 
@@ -83,11 +83,11 @@ public class PageController {
                 // Nếu đã đăng nhập rồi, redirect thẳng tới trang chủ tương ứng
                 return "redirect:/profile-page";
             }
-            model.addAttribute("loginError", "Tài khoản hoặc mật khẩu không chính xác");
+            model.addAttribute("loginError", "Tai khoan hoac mat khau khong chinh xac.");
             return "login";
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("loginError", "Đã có lỗi hệ thống xảy ra");
+            model.addAttribute("loginError", "Da co loi he thong xay ra.");
             return "login";
         }
     }
@@ -95,11 +95,11 @@ public class PageController {
     private User getCurrentUser(Authentication auth) {
         if (auth == null || !auth.isAuthenticated()
                 || auth.getName().equals("anonymousUser")) {
-            throw new RuntimeException("Chưa đăng nhập");
+            throw new RuntimeException("Chua dang nhap.");
         }
 
         return userRepo.findByEmail(auth.getName())
-                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("User khong ton tai."));
     }
 
     @GetMapping("/profile-page")
@@ -144,7 +144,7 @@ public class PageController {
 
         if (!email.equals(currentEmail) && userRepo.findByEmail(email).isPresent()) {
             model.addAttribute("user", user);
-            model.addAttribute("error", "Email đã tồn tại!");
+            model.addAttribute("error", "Email da ton tai!");
             return "edit-profile";
         }
 
@@ -177,17 +177,17 @@ public class PageController {
             Model model
     ) {
         if (!newPassword.equals(confirmPassword)) {
-            model.addAttribute("error", "Mật khẩu mới và xác nhận không khớp.");
+            model.addAttribute("error", "Mat khau moi va xac nhan khong khop.");
             return "change-password";
         }
         if (newPassword.length() < 6) {
-            model.addAttribute("error", "Mật khẩu mới cần ít nhất 6 ký tự.");
+            model.addAttribute("error", "Mat khau moi can it nhat 6 ky tu.");
             return "change-password";
         }
 
         User user = getCurrentUser(auth);
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            model.addAttribute("error", "Mật khẩu hiện tại không đúng.");
+            model.addAttribute("error", "Mat khau hien tai khong dung.");
             return "change-password";
         }
 

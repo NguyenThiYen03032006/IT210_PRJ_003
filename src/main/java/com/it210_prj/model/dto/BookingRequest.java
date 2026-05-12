@@ -11,9 +11,9 @@ import java.util.List;
 @Setter
 public class BookingRequest {
 
-    @NotNull
+    @NotNull(message = "Ma suat chieu khong duoc de trong")
     private Long showtimeId;
 
-    @NotEmpty
+    @NotEmpty(message = "Danh sach ghe khong duoc de trong")
     private List<Long> seatIds;
 }

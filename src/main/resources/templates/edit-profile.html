@@ -14,14 +14,14 @@
         <div class="col-lg-7">
             <form class="cinema-panel p-4" action="/update-profile" method="post">
                 <p class="subtle-label">Profile</p>
-                <h1 class="page-title mb-4">Chỉnh sửa thông tin</h1>
+                <h1 class="page-title mb-4">Chinh sua thong tin</h1>
 
                 <div class="form-group">
                     <label>Username</label>
                     <input type="text" name="userName" class="form-control cinema-input" th:value="${user.profile.getUser().getUsername()}">
                 </div>
                 <div class="form-group">
-                    <label>Họ tên</label>
+                    <label>Ho ten</label>
                     <input type="text" name="fullName" class="form-control cinema-input" th:value="${user.profile.fullName}">
                 </div>
                 <div class="form-group">
@@ -29,14 +29,14 @@
                     <input type="email" name="email" class="form-control cinema-input" th:value="${user.email}">
                 </div>
                 <div class="form-group">
-                    <label>Số điện thoại</label>
+                    <label>So dien thoai</label>
                     <input type="text" name="phone" class="form-control cinema-input" th:value="${user.profile.phone}">
                 </div>
                 <div th:if="${error}" class="alert alert-danger">
                     <span th:text="${error}"></span>
                 </div>
-                <button class="btn cinema-btn cinema-btn-gold">Lưu</button>
-                <a th:href="@{/profile-page}" class="btn cinema-btn cinema-btn-outline">Quay lại</a>
+                <button class="btn cinema-btn cinema-btn-gold">Luu</button>
+                <a th:href="@{/profile-page}" class="btn cinema-btn cinema-btn-outline">Quay lai</a>
             </form>
         </div>
     </div>

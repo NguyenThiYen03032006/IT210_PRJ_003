@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     function money(value) {
-        return new Intl.NumberFormat("vi-VN").format(value) + "đ";
+        return new Intl.NumberFormat("vi-VN").format(value) + "d";
     }
 
     function priceForSeatElement(seat) {
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 sum += priceForSeatElement(seat);
             }
         });
-        selectedList.textContent = labels.length ? labels.join(", ") : "Chưa chọn";
+        selectedList.textContent = labels.length ? labels.join(", ") : "Chua chon";
         totalPrice.textContent = money(sum);
     }
 
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
         bookingForm.addEventListener("submit", function (event) {
             event.preventDefault();
             if (!selectedSeats.size) {
-                messageBox.textContent = "Vui lòng chọn ít nhất một ghế.";
+                messageBox.textContent = "Vui long chon it nhat mot ghe.";
                 return;
             }
 
@@ -67,11 +67,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(function (response) {
                     if (response.status === 401 || response.status === 403) {
                         window.location.href = "/auth/login";
-                        return Promise.reject(new Error("Cần đăng nhập để đặt vé."));
+                        return Promise.reject(new Error("Can dang nhap de dat ve."));
                     }
                     if (!response.ok) {
                         return response.text().then(function (text) {
-                            throw new Error(text || "Không thể đặt vé.");
+                            throw new Error(text || "Khong the dat ve.");
                         });
                     }
                     return response.json();

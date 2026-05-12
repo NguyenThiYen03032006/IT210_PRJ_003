@@ -46,29 +46,29 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingResponse bookTickets(String userEmail, Long showtimeId, List<Long> seatIds) {
         if (seatIds == null || seatIds.isEmpty()) {
-            throw new RuntimeException("Vui lòng chọn ít nhất một ghế");
+            throw new RuntimeException("Vui long chon it nhat mot ghe.");
         }
 
         List<Long> uniqueSeatIds = new ArrayList<>(new LinkedHashSet<>(seatIds));
         Showtime showtime = showtimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new RuntimeException("Suất chiếu không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("Suat chieu khong ton tai."));
 
         if (!showtime.getStartTime().isAfter(LocalDateTime.now())) {
-            throw new RuntimeException("Không thể đặt vé cho suất chiếu đã bắt đầu hoặc đã kết thúc");
+            throw new RuntimeException("Khong the dat ve cho suat chieu da bat dau hoac da ket thuc.");
         }
 
         List<Seat> seats = seatRepository.findByIdInAndRoomId(uniqueSeatIds, showtime.getRoom().getId());
         if (seats.size() != uniqueSeatIds.size()) {
-            throw new RuntimeException("Có ghế không thuộc phòng chiếu này");
+            throw new RuntimeException("Co ghe khong thuoc phong chieu nay.");
         }
 
         List<Long> bookedSeatIds = ticketRepository.findBookedSeatIds(showtimeId, uniqueSeatIds);
         if (!bookedSeatIds.isEmpty()) {
-            throw new RuntimeException("Một hoặc nhiều ghế đã được đặt: " + bookedSeatIds);
+            throw new RuntimeException("Mot hoac nhieu ghe da duoc dat: " + bookedSeatIds);
         }
 
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("Nguoi dung khong ton tai."));
 
         double total = 0;
         for (Seat seat : seats) {
@@ -97,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public void requestCancelBooking(String userEmail, Long bookingId) {
         Booking booking = bookingRepository.findByIdAndUserEmail(bookingId, userEmail)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn của bạn"));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay hoa don cua ban."));
 
         if ("CANCELLED".equals(booking.getStatus())) {
             return;
@@ -127,7 +127,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingInvoiceDetailDTO getBookingInvoiceDetail(String userEmail, Long bookingId) {
         List<Ticket> tickets = ticketRepository.findInvoiceDetailForBooking(bookingId, userEmail);
         if (tickets.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy hóa đơn hoặc bạn không có quyền xem.");
+            throw new RuntimeException("Khong tim thay hoa don hoac ban khong co quyen xem.");
         }
         Ticket first = tickets.get(0);
         Booking booking = first.getBooking();
@@ -205,7 +205,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public void confirmBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay don dat ve."));
 
         if ("CANCELLED".equals(booking.getStatus())) {
             throw new RuntimeException("Don da huy, khong the in ve.");
@@ -222,7 +222,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public void cancelBookingByStaff(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đặt vé"));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay dat ve."));
 
         if ("CANCELLED".equals(booking.getStatus())) {
             return;
@@ -236,7 +236,8 @@ public class BookingServiceImpl implements BookingService {
         for (Ticket ticket : tickets) {
             LocalDateTime deadline = LocalDateTime.now().plusHours(CANCEL_BEFORE_HOURS);
             if (!deadline.isBefore(ticket.getShowtime().getStartTime())) {
-                throw new RuntimeException("Khong the huy/hoan tien vi con duoi 12 gio truoc suat chieu.");
+                throw new RuntimeException(
+                        "Khong the huy/hoan tien vi con duoi " + CANCEL_BEFORE_HOURS + " gio truoc suat chieu.");
             }
         }
 

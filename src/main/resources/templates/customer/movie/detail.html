@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${movie.title}">Chi tiết phim</title>
+    <title th:text="${movie.title}">Chi tiet phim</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/cinema.css}">
 </head>
@@ -18,34 +18,34 @@
         </div>
         <div class="col-md-8">
             <span class="age-badge" th:text="${movie.ageRating != null ? movie.ageRating : 'T13'}">T13</span>
-            <h1 class="mt-3" th:text="${movie.title}">Tên phim</h1>
+            <h1 class="mt-3" th:text="${movie.title}">Ten phim</h1>
             <p class="text-muted">
                 <span th:text="${movie.releaseDate}">2026</span>
-                <span class="mx-2">•</span>
-                <span th:text="${movie.duration} + ' phút'">120 phút</span>
-                <span class="mx-2">•</span>
-                <span th:text="${movie.genre != null ? movie.genre.name : 'Đang cập nhật'}">Thể loại</span>
+                <span class="mx-2">-</span>
+                <span th:text="${movie.duration} + ' phut'">120 phut</span>
+                <span class="mx-2">-</span>
+                <span th:text="${movie.genre != null ? movie.genre.name : 'Dang cap nhat'}">The loai</span>
             </p>
             <p th:if="${movie.trailerUrl != null && !movie.trailerUrl.isEmpty()}">
                 <a class="btn cinema-btn cinema-btn-outline btn-sm" th:href="${movie.trailerUrl}" target="_blank" rel="noopener noreferrer">Xem trailer</a>
             </p>
             <div class="cinema-panel p-4 mb-4">
-                <h5>Mô tả</h5>
-                <p class="text-muted mb-0" th:text="${movie.description != null ? movie.description : 'Nội dung phim đang được cập nhật.'}">
-                    Nội dung phim.
+                <h5>Mo ta</h5>
+                <p class="text-muted mb-0" th:text="${movie.description != null ? movie.description : 'Noi dung phim dang duoc cap nhat.'}">
+                    Noi dung phim.
                 </p>
             </div>
             <div class="row">
                 <div class="col-sm-6 mb-3">
                     <div class="cinema-panel p-3">
-                        <small class="text-muted">Năm sản xuất</small>
-                        <div th:text="${movie.releaseDate != null ? #temporals.format(movie.releaseDate, 'yyyy') : 'Đang cập nhật'}">2026</div>
+                        <small class="text-muted">Nam san xuat</small>
+                        <div th:text="${movie.releaseDate != null ? #temporals.format(movie.releaseDate, 'yyyy') : 'Dang cap nhat'}">2026</div>
                     </div>
                 </div>
                 <div class="col-sm-6 mb-3">
                     <div class="cinema-panel p-3">
-                        <small class="text-muted">Đạo diễn</small>
-                        <div th:text="${movie.director != null && !movie.director.isEmpty()} ? ${movie.director} : 'Đang cập nhật'">Đang cập nhật</div>
+                        <small class="text-muted">Dao dien</small>
+                        <div th:text="${movie.director != null && !movie.director.isEmpty()} ? ${movie.director} : 'Dang cap nhat'">Dang cap nhat</div>
                     </div>
                 </div>
             </div>
@@ -54,50 +54,50 @@
 
     <section class="cinema-section">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="mb-0">Chọn suất chiếu</h2>
-            <a class="btn cinema-btn cinema-btn-outline" th:href="@{/customer/home}">Quay lại</a>
+            <h2 class="mb-0">Chon suat chieu</h2>
+            <a class="btn cinema-btn cinema-btn-outline" th:href="@{/customer/home}">Quay lai</a>
         </div>
 
         <div class="alert alert-info" th:if="${infoMessage}" th:text="${infoMessage}"></div>
 
         <div class="cinema-panel p-4" th:if="${!#maps.isEmpty(showtimesByDate)}">
-            <p class="text-muted mb-2">Chọn ngày</p>
+            <p class="text-muted mb-2">Chon ngay</p>
             <div class="day-chips mb-4">
                 <button type="button" class="genre-chip day-chip mr-2 mb-2"
                         th:each="entry, s : ${showtimesByDate}"
                         th:classappend="${s.first} ? ' genre-chip-active'"
                         th:text="${#temporals.format(entry.key, 'EEE dd/MM/yyyy')}"
-                        th:attr="data-day-index=${s.index}">Thứ 2</button>
+                        th:attr="data-day-index=${s.index}">Ngay</button>
             </div>
 
             <div th:each="entry, s : ${showtimesByDate}"
                  class="day-panel"
                  th:classappend="${s.first} ? '' : ' d-none'"
                  th:attr="data-day-panel=${s.index}">
-                <p class="text-muted small mb-2">Giờ chiếu</p>
+                <p class="text-muted small mb-2">Gio chieu</p>
                 <th:block th:each="row : ${entry.value}">
                     <a th:if="${!row.soldOut}"
                        class="showtime-btn"
                        th:href="@{'/customer/showtimes/' + ${row.showtimeId} + '/seats'}">
                         <span th:text="${#temporals.format(row.startTime, 'HH:mm')}">09:00</span>
-                        <span class="ml-2 text-muted" th:text="${row.roomName}">Phòng 1</span>
+                        <span class="ml-2 text-muted" th:text="${row.roomName}">Phong 1</span>
                         <span class="ml-2 badge badge-secondary" th:text="${row.screenFormat}">2D</span>
                     </a>
                     <span th:if="${row.soldOut}"
                           class="showtime-btn disabled text-muted"
                           style="cursor:not-allowed;pointer-events:none;opacity:0.85;"
-                          title="Hết vé">
+                          title="Het ve">
                         <span th:text="${#temporals.format(row.startTime, 'HH:mm')}">09:00</span>
-                        <span class="ml-2 text-muted" th:text="${row.roomName}">Phòng 1</span>
+                        <span class="ml-2 text-muted" th:text="${row.roomName}">Phong 1</span>
                         <span class="ml-2 badge badge-secondary" th:text="${row.screenFormat}">2D</span>
-                        <span class="ml-2 badge badge-danger">Hết vé</span>
+                        <span class="ml-2 badge badge-danger">Het ve</span>
                     </span>
                 </th:block>
             </div>
         </div>
 
         <div class="cinema-panel p-4" th:if="${#maps.isEmpty(showtimesByDate)}">
-            <p class="text-muted mb-0">Chưa có suất chiếu cho phim này.</p>
+            <p class="text-muted mb-0">Chua co suat chieu cho phim nay.</p>
         </div>
     </section>
 </main>

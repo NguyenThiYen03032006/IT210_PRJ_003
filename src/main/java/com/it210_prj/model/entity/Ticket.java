@@ -36,4 +36,7 @@ public class Ticket {
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
+    // them thuoc tinh status  (ACTIVE / CANCELLED)
+
+
 }

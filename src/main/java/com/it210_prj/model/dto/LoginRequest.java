@@ -12,9 +12,9 @@ import lombok.Setter;
 @Getter
 public class LoginRequest {
 
-    @NotBlank(message = "Email không được để trống")
+    @NotBlank(message = "Email khong duoc de trong")
     private String username;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
+    @NotBlank(message = "Mat khau khong duoc de trong")
     private String password;
 }

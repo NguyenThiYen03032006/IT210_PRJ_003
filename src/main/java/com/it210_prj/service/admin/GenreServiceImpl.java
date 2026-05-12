@@ -21,7 +21,7 @@ public class GenreServiceImpl implements GenreService{
     @Override
     public Genre findById(Long id) {
         return genreRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Genre not found"));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay the loai."));
     }
 
     @Override

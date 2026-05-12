@@ -12,25 +12,25 @@
         <div th:replace="~{admin/admin-sidebar :: admin-sidebar}"></div>
         <main class="col-md-9 col-lg-10 p-4">
             <p class="subtle-label">Movies</p>
-            <h1 class="page-title mb-4" th:text="${movie.id == null} ? 'Thêm phim' : 'Sửa phim'">Movie Form</h1>
+            <h1 class="page-title mb-4" th:text="${movie.id == null} ? 'Them phim' : 'Sua phim'">Movie Form</h1>
 
             <form class="cinema-panel p-4" th:action="@{/admin/movies/save}" th:object="${movie}" method="post">
                 <input type="hidden" th:field="*{id}"/>
                 <div class="form-group">
-                    <label>Tên phim</label>
+                    <label>Ten phim</label>
                     <input type="text" class="form-control cinema-input" th:field="*{title}">
                 </div>
                 <div class="form-group">
-                    <label>Mô tả</label>
+                    <label>Mo ta</label>
                     <textarea class="form-control cinema-input" rows="4" th:field="*{description}"></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label>Thời lượng (phút)</label>
+                        <label>Thoi luong (phut)</label>
                         <input type="number" class="form-control cinema-input" th:field="*{duration}">
                     </div>
                     <div class="form-group col-md-6">
-                        <label>Ngày phát hành</label>
+                        <label>Ngay phat hanh</label>
                         <input type="date" class="form-control cinema-input" th:field="*{releaseDate}">
                     </div>
                 </div>
@@ -40,11 +40,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label>Nhãn lứa tuổi (T13, T16, P)</label>
+                        <label>Nhan lua tuoi (T13, T16, P)</label>
                         <input type="text" class="form-control cinema-input" th:field="*{ageRating}" placeholder="T13">
                     </div>
                     <div class="form-group col-md-8">
-                        <label>Đạo diễn</label>
+                        <label>Dao dien</label>
                         <input type="text" class="form-control cinema-input" th:field="*{director}">
                     </div>
                 </div>
@@ -54,26 +54,26 @@
                 </div>
                 <div class="form-group form-check mb-3">
                     <input type="checkbox" class="form-check-input" id="movieHot" th:field="*{hot}">
-                    <label class="form-check-label" for="movieHot">Phim hot — hiển thị ở carousel trang chủ</label>
+                    <label class="form-check-label" for="movieHot">Phim hot - hien thi o carousel trang chu</label>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label>Danh mục</label>
+                        <label>Danh muc</label>
                         <select class="form-control cinema-input" th:field="*{category.id}">
-                            <option value="">-- Chọn danh mục --</option>
+                            <option value="">-- Chon danh muc --</option>
                             <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
                         </select>
                     </div>
                     <div class="form-group col-md-6">
-                        <label>Thể loại</label>
+                        <label>The loai</label>
                         <select class="form-control cinema-input" th:field="*{genre.id}">
-                            <option value="">-- Chọn thể loại --</option>
+                            <option value="">-- Chon the loai --</option>
                             <option th:each="g : ${genres}" th:value="${g.id}" th:text="${g.name}"></option>
                         </select>
                     </div>
                 </div>
-                <button class="btn cinema-btn cinema-btn-gold">Lưu</button>
-                <a th:href="@{/admin/movies}" class="btn cinema-btn cinema-btn-outline">Quay lại</a>
+                <button class="btn cinema-btn cinema-btn-gold">Luu</button>
+                <a th:href="@{/admin/movies}" class="btn cinema-btn cinema-btn-outline">Quay lai</a>
             </form>
         </main>
     </div>

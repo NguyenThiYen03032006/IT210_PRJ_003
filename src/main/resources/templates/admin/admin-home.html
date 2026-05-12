@@ -15,50 +15,50 @@
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                 <div>
                     <p class="subtle-label">Dashboard</p>
-                    <h1 class="page-title mb-0">Thống kê &amp; tổng quan</h1>
+                    <h1 class="page-title mb-0">Thong ke &amp; tong quan</h1>
                 </div>
-                <a class="btn cinema-btn cinema-btn-gold mt-2 mt-md-0" th:href="@{/admin/showtimes}">Quản lý suất chiếu</a>
+                <a class="btn cinema-btn cinema-btn-gold mt-2 mt-md-0" th:href="@{/admin/showtimes}">Quan ly suat chieu</a>
             </div>
 
-            <h5 class="text-muted mb-3">Doanh thu &amp; vé</h5>
+            <h5 class="text-muted mb-3">Doanh thu &amp; ve</h5>
             <div class="row">
                 <div class="col-sm-6 col-xl-3 mb-3">
                     <div class="cinema-panel p-4 h-100 border-left border-warning" style="border-left-width:4px!important;">
-                        <small class="text-muted d-block">Doanh thu tích lũy</small>
+                        <small class="text-muted d-block">Doanh thu tich luy</small>
                         <h2 class="mb-0 text-warning"
-                            th:text="${#numbers.formatDecimal(dash.totalRevenue, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</h2>
-                        <small class="text-muted">Chỉ đơn PAID / CONFIRMED</small>
+                            th:text="${#numbers.formatDecimal(dash.totalRevenue, 0, 'COMMA', 0, 'POINT')} + 'd'">0d</h2>
+                        <small class="text-muted">Chi don PAID / CONFIRMED</small>
                     </div>
                 </div>
                 <div class="col-sm-6 col-xl-3 mb-3">
                     <div class="cinema-panel p-4 h-100 border-left border-info" style="border-left-width:4px!important;">
-                        <small class="text-muted d-block">Doanh thu hôm nay</small>
+                        <small class="text-muted d-block">Doanh thu hom nay</small>
                         <h2 class="mb-0"
-                            th:text="${#numbers.formatDecimal(dash.todayRevenue, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</h2>
+                            th:text="${#numbers.formatDecimal(dash.todayRevenue, 0, 'COMMA', 0, 'POINT')} + 'd'">0d</h2>
                         <small class="text-muted">
-                            Đặt trong ngày: <span th:text="${dash.bookingsToday}">0</span> đơn thành công
+                            Dat trong ngay: <span th:text="${dash.bookingsToday}">0</span> don thanh cong
                         </small>
                     </div>
                 </div>
                 <div class="col-sm-6 col-xl-3 mb-3">
                     <div class="cinema-panel p-4 h-100">
-                        <small class="text-muted d-block">Vé đã bán (tổng ghế đã đặt)</small>
+                        <small class="text-muted d-block">Ve da ban (tong ghe da dat)</small>
                         <h2 class="mb-0" th:text="${dash.ticketsSoldTotal}">0</h2>
                     </div>
                 </div>
                 <div class="col-sm-6 col-xl-3 mb-3">
                     <div class="cinema-panel p-4 h-100">
-                        <small class="text-muted d-block">Đặt vé (PAID + CONFIRMED)</small>
+                        <small class="text-muted d-block">Dat ve (PAID + CONFIRMED)</small>
                         <h2 class="mb-0" th:text="${dash.bookingActiveCount}">0</h2>
                         <small class="text-muted">
-                            Trong DB: <span th:text="${dash.bookingTotal}">0</span> bản ghi
-                            • Hủy: <span th:text="${dash.bookingCancelledCount}">0</span>
+                            Trong DB: <span th:text="${dash.bookingTotal}">0</span> ban ghi
+                            - Huy: <span th:text="${dash.bookingCancelledCount}">0</span>
                         </small>
                     </div>
                 </div>
             </div>
 
-            <h5 class="text-muted mb-3 mt-2">Hạ tầng rạp</h5>
+            <h5 class="text-muted mb-3 mt-2">Ha tang rap</h5>
             <div class="row">
                 <div class="col-6 col-md-3 mb-3">
                     <div class="cinema-panel p-4 text-center">
@@ -68,19 +68,19 @@
                 </div>
                 <div class="col-6 col-md-3 mb-3">
                     <div class="cinema-panel p-4 text-center">
-                        <small class="text-muted d-block">Phòng chiếu</small>
+                        <small class="text-muted d-block">Phong chieu</small>
                         <h2 class="mb-0" th:text="${dash.roomCount}">0</h2>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 mb-3">
                     <div class="cinema-panel p-4 text-center">
-                        <small class="text-muted d-block">Số ghế / phòng</small>
+                        <small class="text-muted d-block">So ghe / phong</small>
                         <h2 class="mb-0" th:text="${dash.seatCount}">0</h2>
                     </div>
                 </div>
                 <div class="col-6 col-md-3 mb-3">
                     <div class="cinema-panel p-4 text-center">
-                        <small class="text-muted d-block">Suất chiếu (tổng)</small>
+                        <small class="text-muted d-block">Suat chieu (tong)</small>
                         <h2 class="mb-0" th:text="${dash.showtimeTotal}">0</h2>
                     </div>
                 </div>
@@ -89,26 +89,26 @@
             <div class="row mb-3">
                 <div class="col-md-6 mb-3">
                     <div class="cinema-panel p-4">
-                        <small class="text-muted d-block">Suất chiếu sắp tới</small>
+                        <small class="text-muted d-block">Suat chieu sap toi</small>
                         <h3 class="mb-0" th:text="${dash.upcomingShowtimeCount}">0</h3>
-                        <small class="text-muted">Giờ bắt đầu &gt; hiện tại</small>
+                        <small class="text-muted">Gio bat dau &gt; hien tai</small>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class="cinema-panel p-4">
-                        <small class="text-muted d-block">Suất đã kết thúc</small>
+                        <small class="text-muted d-block">Suat da ket thuc</small>
                         <h3 class="mb-0" th:text="${dash.pastShowtimeCount}">0</h3>
-                        <small class="text-muted">Giờ kết thúc &lt; hiện tại</small>
+                        <small class="text-muted">Gio ket thuc &lt; hien tai</small>
                     </div>
                 </div>
             </div>
 
-            <h5 class="text-muted mb-3">Người dùng</h5>
+            <h5 class="text-muted mb-3">Nguoi dung</h5>
             <div class="row mb-4">
                 <div class="col-md-6 mb-3">
                     <div class="cinema-panel p-4 d-flex justify-content-between align-items-center">
                         <div>
-                            <small class="text-muted d-block">Khách hàng</small>
+                            <small class="text-muted d-block">Khach hang</small>
                             <h3 class="mb-0" th:text="${dash.customerCount}">0</h3>
                         </div>
                         <i class="bi bi-people-fill text-warning h2 mb-0"></i>
@@ -117,7 +117,7 @@
                 <div class="col-md-6 mb-3">
                     <div class="cinema-panel p-4 d-flex justify-content-between align-items-center">
                         <div>
-                            <small class="text-muted d-block">Nhân viên (STAFF)</small>
+                            <small class="text-muted d-block">Nhan vien (STAFF)</small>
                             <h3 class="mb-0" th:text="${dash.staffCount}">0</h3>
                         </div>
                         <i class="bi bi-person-badge-fill text-info h2 mb-0"></i>
@@ -126,14 +126,14 @@
             </div>
 
             <div class="cinema-panel p-4">
-                <h5 class="mb-3">Top phim theo số vé đã bán</h5>
+                <h5 class="mb-3">Top phim theo so ve da ban</h5>
                 <div class="table-responsive">
                     <table class="table table-borderless mb-0">
                         <thead>
                         <tr class="text-muted small">
                             <th>#</th>
-                            <th>Tên phim</th>
-                            <th class="text-right">Số vé</th>
+                            <th>Ten phim</th>
+                            <th class="text-right">So ve</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -143,7 +143,7 @@
                             <td class="text-right font-weight-bold text-warning" th:text="${row.ticketCount}">0</td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(dash.topMoviesByTickets)}">
-                            <td colspan="3" class="text-muted text-center py-4">Chưa có dữ liệu vé.</td>
+                            <td colspan="3" class="text-muted text-center py-4">Chua co du lieu ve.</td>
                         </tr>
                         </tbody>
                     </table>

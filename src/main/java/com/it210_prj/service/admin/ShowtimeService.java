@@ -36,16 +36,16 @@ public class ShowtimeService {
 
         // 1. Kiểm tra thời gian phải ở tương lai
         if (!startTime.isAfter(LocalDateTime.now())) {
-            throw new RuntimeException("Suất chiếu phải được tạo ở thời điểm trong tương lai.");
+            throw new RuntimeException("Suat chieu phai duoc tao o thoi diem trong tuong lai.");
         }
 
         // 2. Tìm phim theo ID
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phim."));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay phim."));
 
         // 3. Tìm phòng theo ID
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng chiếu."));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay phong chieu."));
 
         // 4. Tính thời gian kết thúc (start + thời lượng phim)
         LocalDateTime endTime = startTime.plusMinutes(movie.getDuration());
@@ -62,7 +62,7 @@ public class ShowtimeService {
         );
 
         if (!conflicts.isEmpty()) {
-            throw new RuntimeException("Phòng đã được đặt trong khung giờ này.");
+            throw new RuntimeException("Phong da duoc dat trong khung gio nay.");
         }
 
         // 7. Tạo đối tượng suất chiếu mới
@@ -93,20 +93,20 @@ public class ShowtimeService {
 
         // 1. Kiểm tra thời gian phải ở tương lai
         if (!startTime.isAfter(LocalDateTime.now())) {
-            throw new RuntimeException("Thời gian suất chiếu phải ở tương lai.");
+            throw new RuntimeException("Thoi gian suat chieu phai o tuong lai.");
         }
 
         // 2. Tìm suất chiếu
         Showtime showtime = showtimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy suất chiếu."));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay suat chieu."));
 
         // 3. Tìm phim
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phim."));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay phim."));
 
         // 4. Tìm phòng
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng chiếu."));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay phong chieu."));
 
         // 5. Tính lại thời gian kết thúc
         LocalDateTime endTime = startTime.plusMinutes(movie.getDuration());
@@ -124,7 +124,7 @@ public class ShowtimeService {
         );
 
         if (!conflicts.isEmpty()) {
-            throw new RuntimeException("Phòng đã được đặt trong khung giờ này.");
+            throw new RuntimeException("Phong da duoc dat trong khung gio nay.");
         }
 
         // 8. Cập nhật dữ liệu
@@ -151,12 +151,12 @@ public class ShowtimeService {
     public void deleteShowtime(Long showtimeId) {
 
         Showtime showtime = showtimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy suất chiếu."));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay suat chieu."));
 
         long bookedSeats = showtimeRepository.countBookedSeats(showtimeId);
 
         if (bookedSeats > 0) {
-            throw new RuntimeException("Không thể xóa suất chiếu vì đã có vé được đặt.");
+            throw new RuntimeException("Khong the xoa suat chieu vi da co ve duoc dat.");
         }
 
         showtimeRepository.delete(showtime);

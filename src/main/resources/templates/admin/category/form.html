@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Danh mục</title>
+    <title>Danh muc</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/cinema.css}">
 </head>
@@ -12,16 +12,16 @@
         <div th:replace="~{admin/admin-sidebar :: admin-sidebar}"></div>
         <main class="col-md-9 col-lg-10 p-4">
             <p class="subtle-label">Categories</p>
-            <h1 class="page-title mb-4" th:text="${category.id != null ? 'Cập nhật danh mục' : 'Thêm danh mục'}">Danh mục</h1>
+            <h1 class="page-title mb-4" th:text="${category.id != null ? 'Cap nhat danh muc' : 'Them danh muc'}">Danh muc</h1>
             <form class="cinema-panel p-4" th:action="@{/admin/categories/save}" th:object="${category}" method="post">
                 <input type="hidden" th:field="*{id}" />
                 <div class="form-group">
-                    <label>Tên danh mục</label>
+                    <label>Ten danh muc</label>
                     <input type="text" th:field="*{name}" class="form-control cinema-input" required />
-                    <small class="text-muted">Ví dụ: Now Showing, Coming Soon.</small>
+                    <small class="text-muted">Vi du: Now Showing, Coming Soon.</small>
                 </div>
-                <button type="submit" class="btn cinema-btn cinema-btn-gold">Lưu</button>
-                <a th:href="@{/admin/categories}" class="btn cinema-btn cinema-btn-outline">Quay lại</a>
+                <button type="submit" class="btn cinema-btn cinema-btn-gold">Luu</button>
+                <a th:href="@{/admin/categories}" class="btn cinema-btn cinema-btn-outline">Quay lai</a>
             </form>
         </main>
     </div>
